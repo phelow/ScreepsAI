@@ -7,7 +7,6 @@ var roleBuilder = {
         var sourcesChecking = creep.room.find(FIND_CONSTRUCTION_SITES);
 	        
 	    if(sourcesChecking.length == 0){
-	        console.log("running harvester through builder");
 	        roleHarvester.run(creep);
 	        return;
 	    }

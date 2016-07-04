@@ -38,7 +38,6 @@ var roleFootman = {
 			creep.attack(targets[enemyIndex]);
 		}
 		else {
-            console.log("running harvester through footman");
             roleHarvester.run(creep,true);
 		}
 	}

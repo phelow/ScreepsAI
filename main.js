@@ -3,6 +3,8 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleFootman = require('role.footman');
 
+var construction = require('construction');
+
 var spawn = function(type) {
     if(type == 'harvester')
     {
@@ -18,11 +20,14 @@ var spawn = function(type) {
     }
     else if(type == 'footman')
     {
-        Game.spawns.Spawn1.createCreep([MOVE,CARRY, MOVE, ATTACK, WORK], undefined, {role: 'footman'});
+        Game.spawns.Spawn1.createCreep([MOVE,CARRY, ATTACK, WORK], undefined, {role: 'footman'});
     }
 }
 
 module.exports.loop = function () {
+    console.log("calling buildRoadToAllSources");
+    construction.buildRoadToAllSources();
+    
     
     var creepsCount = new Map();
     creepsCount.set('harvester',0);
@@ -46,7 +51,6 @@ module.exports.loop = function () {
         }
         else if(creep.memory.role == 'footman') {
             creepsCount.set('footman', creepsCount.get('footman') + 1);
-            console.log("Selecting footman script");
             roleFootman.run(creep);
         }
     }
