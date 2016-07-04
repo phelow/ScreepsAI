@@ -1,19 +1,16 @@
-var information = require('room.information');
-
-
-var targetSource;
-var timeToFullHarvest = 0;
+var roleHarvester = require('role.harvester');
 
 var roleBuilder = {
-    sourceSelectionPoints: function(source,creep) {
-        var steps = Math.sqrt(Math.pow(source.pos.x - creep.pos.x,2) + Math.pow(source.pos.y - creep.pos.y,2));
-        
-        return steps + information.getHarvestTime(source, creep.room);
-    },
+
     /** @param {Creep} creep **/
     run: function(creep) {
-        timeToFullHarvest++;
-
+        var sourcesChecking = creep.room.find(FIND_CONSTRUCTION_SITES);
+	        
+	    if(sourcesChecking.length == 0){
+	        console.log("running harvester through builder");
+	        roleHarvester.run(creep);
+	        return;
+	    }
 	    if(creep.memory.building && creep.carry.energy == 0) {
             creep.memory.building = false;
 	    }
@@ -30,20 +27,10 @@ var roleBuilder = {
             }
 	    }
 	    else {
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION ||
-                                structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-                    }
-            });
-            if(targets.length > 0) {
-                if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    console.log("harvest complete:" + timeToFullHarvest);
-                    timeToFullHarvest = 0;
-                    creep.moveTo(targets[0]);
-                    information.logHarvestTime(timeToFullHarvest,targetSource, creep.room);
-                }
+	        var sources = creep.room.find(FIND_SOURCES);
+	        
+            if(creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(sources[0]);
             }
 	    }
 	}

@@ -11,10 +11,10 @@ var harvestRooms = new Map();
 
 var harvestTimes = {
     logHarvestTime: function(time, spawn, room){
-        harvestRooms[room.name + spawn.name] = time;
+        harvestRooms[room.name + spawn] = time;
     },
     getHarvestTime: function(spawn, room){
-        if(harvestRooms[room.name + spawn.name] == null){
+        if(harvestRooms[room.name + spawn] == null){
             return 0;
         }
         return harvestRooms[spawn];

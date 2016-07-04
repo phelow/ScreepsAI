@@ -12,9 +12,10 @@ var roleHarvester = {
         
         return steps + information.getHarvestTime(source, creep.room);
     },
-    run: function(creep) {
+    run: function(creep, fromFootman) {
+        //console.log("running harvester script" + fromFootman);
         timeToFullHarvest++;
-	    if(creep.carry.energy < creep.carryCapacity) {
+	    if(creep.carry.energy <= creep.carryCapacity) {
             var sources = creep.room.find(FIND_SOURCES);
             /**find the best source and harvest that**/
             
@@ -41,7 +42,6 @@ var roleHarvester = {
             });
             if(targets.length > 0) {
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    console.log("harvest complete:" + timeToFullHarvest);
                     timeToFullHarvest = 0;
                     creep.moveTo(targets[0]);
                     information.logHarvestTime(timeToFullHarvest,targetSource, creep.room);

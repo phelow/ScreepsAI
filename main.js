@@ -1,8 +1,9 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleFootman = require('role.footman');
 
-spawn = function(type) {
+var spawn = function(type) {
     if(type == 'harvester')
     {
         Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE], undefined, {role: 'harvester'});
@@ -13,30 +14,21 @@ spawn = function(type) {
     }
     else if(type == 'builder')
     {
-        Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE], undefined, {role: 'upgrader'});
+        Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE], undefined, {role: 'builder'});
+    }
+    else if(type == 'footman')
+    {
+        Game.spawns.Spawn1.createCreep([MOVE,CARRY, MOVE, ATTACK, WORK], undefined, {role: 'footman'});
     }
 }
 
 module.exports.loop = function () {
     
-    var tower = Game.getObjectById('a8b7ffef999574de55d6cce3');
-    if(tower) {
-        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
-        });
-        if(closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
-        }
-
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if(closestHostile) {
-            tower.attack(closestHostile);
-        }
-    }
     var creepsCount = new Map();
     creepsCount.set('harvester',0);
     creepsCount.set('upgrader',0);
     creepsCount.set('builder',0);
+    creepsCount.set('footman',0);
     
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
@@ -44,24 +36,28 @@ module.exports.loop = function () {
             creepsCount.set('harvester', creepsCount.get('harvester') + 1);
             roleHarvester.run(creep);
         }
-        if(creep.memory.role == 'upgrader') {
-            roleUpgrader.run(creep);
+        else if(creep.memory.role == 'upgrader') {
             creepsCount.set('upgrader', creepsCount.get('upgrader') + 1);
+            roleUpgrader.run(creep);
         }
-        if(creep.memory.role == 'builder') {
-            roleBuilder.run(creep);
+        else if(creep.memory.role == 'builder') {
             creepsCount.set('builder', creepsCount.get('builder') + 1);
+            roleBuilder.run(creep);
+        }
+        else if(creep.memory.role == 'footman') {
+            creepsCount.set('footman', creepsCount.get('footman') + 1);
+            console.log("Selecting footman script");
+            roleFootman.run(creep);
         }
     }
+    
     var min = 'harvester';
-    var minValue = Math.max;
+    var minValue = Number.MAX_VALUE;
     for (var [key, value] of creepsCount) {
         if(value < minValue){
             minValue = value;
             min = key;
         }
-        
-        console.log(key + " = " + value);
     }
     spawn(min);
 }
