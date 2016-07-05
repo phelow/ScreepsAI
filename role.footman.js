@@ -8,11 +8,10 @@ var roleFootman = {
         return steps;
     },
     run: function(creep) {
-        console.log("running footman script");
         var targets = creep.room.find(Game.FIND_HOSTILE_CREEPS);
-        if(targets.length == 0){
+        /*if(targets.length == 0){
             console.log("no creeps found");
-        }
+        }*/
 		if (targets.length > 0) {
 		    //find the best enemy to attack
 		    var enemyIndex = 0;

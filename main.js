@@ -5,23 +5,42 @@ var roleFootman = require('role.footman');
 
 var construction = require('construction');
 
-var spawn = function(type) {
+var spawnCreep = function(type, spawn, energy) {
+    var abilitiesArray = [MOVE, CARRY, WORK];
+    
+    energy -= 200;
+    
     if(type == 'harvester')
     {
-        Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE], undefined, {role: 'harvester'});
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -= 100;
+        }
     }
     else if(type == 'upgrader')
     {
-        Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE], undefined, {role: 'upgrader'});
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -= 100;
+        }
     }
     else if(type == 'builder')
     {
-        Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE], undefined, {role: 'builder'});
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -= 100;
+        }
     }
     else if(type == 'footman')
     {
-        Game.spawns.Spawn1.createCreep([MOVE,CARRY, ATTACK, WORK], undefined, {role: 'footman'});
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -= 100;
+        }
     }
+    
+    
+        spawn.createCreep(abilitiesArray, undefined, {role: type});
 }
 
 module.exports.loop = function () {
@@ -55,14 +74,25 @@ module.exports.loop = function () {
         }
     }
     
-    var min = 'harvester';
-    var minValue = Number.MAX_VALUE;
-    for (var [key, value] of creepsCount) {
-        if(value < minValue){
-            minValue = value;
-            min = key;
+    for(var s in Game.spawns){
+        var spawn = Game.spawns[s];
+        //only spawn at total capacity
+        var totalEnergy = spawn.room.energyAvailable;
+        var totalCapacity = spawn.room.energyCapacityAvailable;
+
+        var spawn= Game.spawns[s];
+        
+        if(totalCapacity>= totalEnergy * .9){
+            var min = 'harvester';
+            var minValue = Number.MAX_VALUE;
+            for (var [key, value] of creepsCount) {
+                if(value < minValue){
+                    minValue = value;
+                    min = key;
+                }
+            }
+            spawnCreep(min,spawn,totalEnergy);
         }
     }
-    spawn(min);
 }
     

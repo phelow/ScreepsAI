@@ -7,17 +7,25 @@
  * mod.thing == 'a thing'; // true
  */
 
-var harvestRooms = new Map();
-
+//TODO: improve by averaging times rather than just taking the last one.
 var harvestTimes = {
     logHarvestTime: function(time, spawn, room){
-        harvestRooms[room.name + spawn] = time;
+        if(!Memory.harvestRooms){
+            Memory.harvestRooms = {};
+        }
+        
+        var idx = room + spawn;
+        
+        Memory.harvestRooms[idx] = time;
+        console.log("set time: " + Memory.harvestRooms[idx]);
     },
     getHarvestTime: function(spawn, room){
-        if(harvestRooms[room.name + spawn] == null){
+        var idx = room + spawn;
+        if(Memory.harvestRooms && Memory.harvestRooms[idx] != null){
+            return Memory.harvestRooms[idx];
+        }else{
             return 0;
         }
-        return harvestRooms[spawn];
     },
     shouldSpawnMoreHarvesters: function(){
         
