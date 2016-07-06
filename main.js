@@ -15,8 +15,14 @@ var spawnCreep = function(type, spawn, energy) {
         while(energy >= 150){
             abilitiesArray.push(WORK);
             abilitiesArray.push(CARRY);
+            console.log("e:" +energy);
             energy -= 150;
         }
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -=100;
+        }
+        console.log("e:" + energy);
     }
     else if(type == 'upgrader')
     {
@@ -24,6 +30,10 @@ var spawnCreep = function(type, spawn, energy) {
             abilitiesArray.push(WORK);
             abilitiesArray.push(CARRY);
             energy -= 150;
+        }
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -=100;
         }
     }
     else if(type == 'builder')
@@ -33,18 +43,26 @@ var spawnCreep = function(type, spawn, energy) {
             abilitiesArray.push(CARRY);
             energy -= 150;
         }
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -=100;
+        }
     }
     else if(type == 'footman')
     {
-        while(energy >= 90){
-            abilitiesArray.push(ATTACK);
-            abilitiesArray.push(TOUGH);
-            energy -= 90;
+        while(energy >= 150){
+            abilitiesArray.push(WORK);
+            abilitiesArray.push(CARRY);
+            energy -= 150;
+        }
+        while(energy >= 100){
+            abilitiesArray.push(WORK);
+            energy -=100;
         }
     }
     
     
-        spawn.createCreep(abilitiesArray, undefined, {role: type});
+    spawn.createCreep(abilitiesArray, undefined, {role: type});
 }
 
 module.exports.loop = function () {
@@ -89,8 +107,8 @@ module.exports.loop = function () {
 
 
         var spawn= Game.spawns[s];
-        
-        if(totalCapacity <= totalEnergy * .9){
+        console.log(totalCapacity*.9 + " "+ totalEnergy);
+        if(totalCapacity*.9 <= totalEnergy){
             var min = 'harvester';
             var minValue = Number.MAX_VALUE;
             for (var [key, value] of creepsCount) {

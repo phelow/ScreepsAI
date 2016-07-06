@@ -8,7 +8,7 @@ var roleFootman = {
         return steps;
     },
     run: function(creep) {
-        var targets = creep.room.find(Game.FIND_HOSTILE_CREEPS);
+        var targets = creep.room.find(FIND_HOSTILE_CREEPS);
         /*if(targets.length == 0){
             console.log("no creeps found");
         }*/
