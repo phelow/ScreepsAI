@@ -1,5 +1,5 @@
 var information = require('room.information');
-
+var roleHarvester = require('role.harvester');
 
 var targetSource;
 var timeToFullHarvest = 0;
@@ -27,23 +27,7 @@ var roleUpgrader = {
             }
         }
         else {
-            if(creep.carry.energy < creep.carryCapacity) {
-                var sources = creep.room.find(FIND_SOURCES);
-                /**find the best source and harvest that**/
-                
-                var harvestIndex = 0;
-                for(var i = 0; i < sources.length; i++){
-                    if(this.sourceSelectionPoints(sources[i],creep) < this.sourceSelectionPoints(sources[harvestIndex],creep)){
-                        harvestIndex = i;
-                    }   
-                
-                }
-                
-                if(creep.harvest(sources[harvestIndex]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[harvestIndex]);
-                    targetSource = sources[harvestIndex]
-                }
-            }
+            roleHarvester.run(creep);
         }
 	}
 };

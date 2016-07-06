@@ -16,11 +16,26 @@ module.exports = {
 			var result = Game.spawns.Spawn1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD);
 		}
 	},
+	
+	buildExtensions: function()
+	{
+		for(var spawn in Game.spawns)
+		{
+    		var spawnPos= Game.spawns[spawn].pos;
+    		//TODO: pick better spawn points
+    		var xOffset = Math.round(Math.random() * 10 -5);
+    		var yOffset = Math.round(Math.random() * 10 -5);
+    		
+            var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_EXTENSION);
+            console.log((spawnPos.x + xOffset) + " " + (spawnPos.y + yOffset) + " " + result);
+           
+		}
+	},
+	
 
 	buildRoadToAllSources: function()
 	{
 		var sources = Game.spawns.Spawn1.room.find(FIND_SOURCES);
-        console.log(sources + ":");
 		for(var i in sources)
 		{
 		    console.log(sources[i].pos);

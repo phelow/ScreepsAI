@@ -12,30 +12,34 @@ var spawnCreep = function(type, spawn, energy) {
     
     if(type == 'harvester')
     {
-        while(energy >= 100){
+        while(energy >= 150){
             abilitiesArray.push(WORK);
-            energy -= 100;
+            abilitiesArray.push(CARRY);
+            energy -= 150;
         }
     }
     else if(type == 'upgrader')
     {
-        while(energy >= 100){
+        while(energy >= 150){
             abilitiesArray.push(WORK);
-            energy -= 100;
+            abilitiesArray.push(CARRY);
+            energy -= 150;
         }
     }
     else if(type == 'builder')
     {
-        while(energy >= 100){
+        while(energy >= 150){
             abilitiesArray.push(WORK);
-            energy -= 100;
+            abilitiesArray.push(CARRY);
+            energy -= 150;
         }
     }
     else if(type == 'footman')
     {
-        while(energy >= 100){
-            abilitiesArray.push(WORK);
-            energy -= 100;
+        while(energy >= 90){
+            abilitiesArray.push(ATTACK);
+            abilitiesArray.push(TOUGH);
+            energy -= 90;
         }
     }
     
@@ -46,6 +50,7 @@ var spawnCreep = function(type, spawn, energy) {
 module.exports.loop = function () {
     console.log("calling buildRoadToAllSources");
     construction.buildRoadToAllSources();
+    construction.buildExtensions();
     
     
     var creepsCount = new Map();
@@ -79,10 +84,13 @@ module.exports.loop = function () {
         //only spawn at total capacity
         var totalEnergy = spawn.room.energyAvailable;
         var totalCapacity = spawn.room.energyCapacityAvailable;
+        
+        console.log("totalEnergy:"+totalEnergy+" totalCapacity:" + totalCapacity);
+
 
         var spawn= Game.spawns[s];
         
-        if(totalCapacity>= totalEnergy * .9){
+        if(totalCapacity <= totalEnergy * .9){
             var min = 'harvester';
             var minValue = Number.MAX_VALUE;
             for (var [key, value] of creepsCount) {
@@ -92,6 +100,12 @@ module.exports.loop = function () {
                 }
             }
             spawnCreep(min,spawn,totalEnergy);
+        }
+    }
+    
+    for(var i in Memory.creeps) {
+        if(Object.keys(Memory.creeps[i]).length == 0) {
+            delete Memory.creeps[i];
         }
     }
 }
