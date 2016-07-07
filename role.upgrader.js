@@ -27,6 +27,14 @@ var roleUpgrader = {
             }
         }
         else {
+            
+	        if(Game.spawns.Spawn1.energy == Game.spawns.Spawn1.energyCapacity){
+	            if(creep.room.spawns[0].transferEnergy(creep) == ERR_NOT_IN_RANGE)
+	            {
+	                creep.moveTo(creep.room.spawns[0]);
+	            }
+	            return;
+	        }
             roleHarvester.run(creep);
         }
 	}

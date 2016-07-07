@@ -21,13 +21,16 @@ module.exports = {
 	{
 		for(var spawn in Game.spawns)
 		{
-    		var spawnPos= Game.spawns[spawn].pos;
-    		//TODO: pick better spawn points
-    		var xOffset = Math.round(Math.random() * 10 -5);
-    		var yOffset = Math.round(Math.random() * 10 -5);
-    		
-            var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_EXTENSION);
-            console.log((spawnPos.x + xOffset) + " " + (spawnPos.y + yOffset) + " " + result);
+		    var sources = Game.spawns[spawn].room.find(FIND_SOURCES);
+		    for(var source in sources)
+		    {
+        		var spawnPos= sources[source].pos;
+        		//TODO: pick better spawn points
+        		var xOffset = Math.round(Math.random() * 50 -25);
+        		var yOffset = Math.round(Math.random() * 50 -25);
+        		
+                var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_EXTENSION);
+		    }
            
 		}
 	},
@@ -38,8 +41,14 @@ module.exports = {
 		var sources = Game.spawns.Spawn1.room.find(FIND_SOURCES);
 		for(var i in sources)
 		{
-		    console.log(sources[i].pos);
+		    var extensions = Game.spawns.Spawn1.room.find(STRUCTURE_EXTENSION);
+		    for(var e in extensions){
+			    this.buildRoads(extensions[e], sources[i].pos);
+		    }
+		    
 			this.buildRoads(Game.spawns.Spawn1.pos, sources[i].pos);
 		}
+		
+		
 	},
 };

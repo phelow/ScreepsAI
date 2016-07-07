@@ -10,12 +10,13 @@
 //TODO: improve by averaging times rather than just taking the last one.
 var harvestTimes = {
     logHarvestTime: function(time, x,y, creep){
+        return;
         var idx = creep.room + "" + x+ " " + y;
         if(!Memory.harvestRooms){
             Memory.harvestRooms = {};
         }
         
-        if(!Memory.harvestRooms[idx]){
+        if(!Memory.harvestRooms[idx]["iterator"] > 0){
             Memory.harvestRooms[idx] = {};
             Memory.harvestRooms[idx]["iterator"] = 0;
             Memory.harvestRooms[idx]["size"] = 0;
@@ -36,6 +37,8 @@ var harvestTimes = {
         
     },
     getHarvestTime: function(x,y, creep){
+        return Math.random() * 100; //TODO: fix this system
+        
         var idx = creep.room + "" + x+ " " + y;
         var total = 0;
         if(Memory.harvestRooms && Memory.harvestRooms[idx] != null){
