@@ -7,7 +7,7 @@ var roleFootman = {
         
         return steps;
     },
-    run: function(creep) {
+    run: function(creep,slots) {
         var targets = creep.room.find(FIND_HOSTILE_CREEPS);
         /*if(targets.length == 0){
             console.log("no creeps found");
@@ -37,8 +37,9 @@ var roleFootman = {
 			creep.attack(targets[enemyIndex]);
 		}
 		else {
-            roleHarvester.run(creep,true);
+            return roleHarvester.run(creep,slots);
 		}
+		return slots;
 	}
 };
 

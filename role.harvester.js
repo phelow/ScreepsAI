@@ -1,14 +1,33 @@
-var information = require('room.information');
-
-
-//TODO: explore another room if there is nothing here
-//TODO: it seems to not be logging times correctly, investigate
 var roleHarvester = {
     /** @param {Creep} creep **/
-    run: function(creep, fromFootman) {
+    run: function(creep, slots) {
+        console.log("Printing slots in harvester");
+        console.log(slots);
+        
         var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES);
         
         var sources = creep.room.find(FIND_SOURCES);
+        
+        if(!(creep.memory.harvestIndex && creep.memory.harvestIndex != -1 && sources.length > 0)){
+            console.log(sources)
+            creep.memory.harvestIndex = 0;
+            var y = 0;
+            for(var s in sources){
+                console.log(s);
+                if(slots[y] > slots[creep.memory.harvestIndex]){
+                    console.log(slots[y] + ">" + slots[creep.memory.harvestIndex]);
+                    creep.memory.harvestIndex = y;
+                }
+                y = y + 1;
+                
+            }
+            
+        }
+        slots[creep.memory.harvestIndex] = slots[creep.memory.harvestIndex]-1;
+        
+        
+        console.log("Printing slots in harvester after removing one slot for this harvester");
+        console.log(slots);
         
         if(creep.carry.energy == creep.carryCapacity){
             creep.memory.harvesting = false;
@@ -38,21 +57,21 @@ var roleHarvester = {
                 
             }
             else{
-                if(!(creep.memory.harvestIndex && creep.memory.harvestIndex != -1)){
-                    creep.memory.harvestIndex = 0;
-                    for(var i = 0; i < sources.length; i++){ 
-                        if(information.getHarvestTime(sources[i].pos.x, sources[i].pos.y, creep) < information.getHarvestTime(sources[creep.memory.harvestIndex].pos.x, sources[creep.memory.harvestIndex].pos.y, creep)){
-                            creep.memory.harvestIndex = i;
-                        }
-                    }
-                }
                 if(creep.harvest(sources[creep.memory.harvestIndex]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[creep.memory.harvestIndex]);
                 }
             }
         }
         else {
-            creep.memory.harvestIndex = -1;
+            creep.memory.harvestIndex = 0;
+            var j = 0;
+            for(var s in sources){
+                if(slots[j] > slots[creep.memory.harvestIndex]){
+                    creep.memory.harvestIndex = j;
+                }
+                j = j +1;
+                slots[creep.memory.harvestIndex] = slots[creep.memory.harvestIndex]-1;
+            }
             var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_TOWER ) 
@@ -84,12 +103,14 @@ var roleHarvester = {
                     creep.memory.TimeToFullHarvest = 0;
                     
                     if(creep.carry.energy == 0){
+                        creep.memory.harvestIndex = Math.round(Math.random() * (sources.length-1));
                         creep.memory.harvesting = true;
                         
                     }
                 }
             }
         }
+        return slots;
 	}
 };
 

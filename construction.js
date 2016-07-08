@@ -6,7 +6,7 @@
  * var mod = require('construction');
  * mod.thing == 'a thing'; // true
  */
-//TODO: modularize, make containers
+ 
 module.exports = {
 	buildRoads: function(from, to)
 	{
@@ -26,8 +26,8 @@ module.exports = {
 		    {
         		var spawnPos= sources[source].pos;
         		//TODO: pick better spawn points
-        		var xOffset = Math.round(Math.random() * 50 -25);
-        		var yOffset = Math.round(Math.random() * 50 -25);
+        		var xOffset = Math.round(Math.random() * 4 -2);
+        		var yOffset = Math.round(Math.random() * 4 -2);
         		
                 var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_EXTENSION);
 		    }
@@ -41,11 +41,10 @@ module.exports = {
 		var sources = Game.spawns.Spawn1.room.find(FIND_SOURCES);
 		for(var i in sources)
 		{
-		    var extensions = Game.spawns.Spawn1.room.find(STRUCTURE_EXTENSION);
+		    var extensions = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES);
 		    for(var e in extensions){
-			    this.buildRoads(extensions[e], sources[i].pos);
+			    this.buildRoads(extensions[e].pos, sources[i].pos);
 		    }
-		    
 			this.buildRoads(Game.spawns.Spawn1.pos, sources[i].pos);
 		}
 		

@@ -33,6 +33,7 @@ var spawnCreep = function(type, spawn, energy) {
             abilitiesArray.push(MOVE);
             m = m - 50;
         }
+        spawn.createCreep(abilitiesArray, undefined, {role: 'harvester'});
     }
     else if(type == 'upgrader')
     {
@@ -56,6 +57,7 @@ var spawnCreep = function(type, spawn, energy) {
             abilitiesArray.push(MOVE);
             m = m - 50;
         }
+        spawn.createCreep(abilitiesArray, undefined, {role: 'upgrader'});
     }
     else if(type == 'builder')
     {
@@ -79,6 +81,7 @@ var spawnCreep = function(type, spawn, energy) {
             abilitiesArray.push(MOVE);
             m = m - 50;
         }
+        spawn.createCreep(abilitiesArray, undefined, {role: 'builder'});
     }
     else if(type == 'footman')
     {
@@ -109,38 +112,35 @@ var spawnCreep = function(type, spawn, energy) {
             abilitiesArray.push(MOVE);
             m = m - 50;
         }
+        spawn.createCreep(abilitiesArray, undefined, {role: 'footman'});
     }
     else if(type == 'warrior')
     {
-        var a = energy/2;
-        var m = energy/2;
+        var a = energy/3;
+        var m = energy/3;
+        var c = energy/3;
         
         while(a >= 80){
             abilitiesArray.push(ATTACK);
             a = a - 80;
         }
-        w = w + a;
-        
-        while(w >= 100){
-            abilitiesArray.push(WORK);
-            w = w - 100;
-        }
-        
-        c = c + w;
-        while(c >= 50){
-            abilitiesArray.push(CARRY);
-            c = c - 50;
-        }
-        m = m + c;
+        m = m + a;
         
         while(m >= 50){
             abilitiesArray.push(MOVE);
             m = m - 50;
         }
+        
+        c = c + m;
+        while(c >= 50){
+            abilitiesArray.push(CARRY);
+            c = c - 50;
+        }
+        
+        spawn.createCreep(abilitiesArray, undefined, {role: 'warrior'});
     }
     
     
-    spawn.createCreep(abilitiesArray, undefined, {role: type});
 }
 
 module.exports.loop = function () {
@@ -168,38 +168,78 @@ module.exports.loop = function () {
     creepsCount.set('footman',0);
     creepsCount.set('warrior',0);
     
+    var slots = [];
+    for(var s in Game.spawns){
+        var sources = Game.spawns[s].room.find(FIND_SOURCES);
+        var y = 0;
+        for(var source in sources){
+            slots.push(0);
+            var pos = sources[source].pos;
+            
+            if(Game.map.getTerrainAt(pos.x + 1,pos.y,sources[source].room.name) != 'wall'){
+                slots[y] = slots[y] + 1;
+            }
+            
+            if(Game.map.getTerrainAt(pos.x + 1,pos.y - 1,sources[source].room.name) != 'wall'){
+                slots[y] = slots[y] + 1;
+            }
+            
+            if(Game.map.getTerrainAt(pos.x + 1,pos.y + 1,sources[source].room.name) != 'wall'){
+                slots[y] = slots[y] + 1;
+            }
+            
+            if(Game.map.getTerrainAt(pos.x - 1,pos.y,sources[source].room.name) != 'wall'){
+                slots[y] = slots[y] + 1;
+            }
+            
+            
+            if(Game.map.getTerrainAt(pos.x - 1,pos.y + 1,sources[source].room.name) != 'wall'){
+                slots[y] = slots[y] + 1;
+            }
+            
+            
+            if(Game.map.getTerrainAt(pos.x - 1,pos.y - 1,sources[source].room.name) != 'wall'){
+                slots[y] = slots[y] + 1;
+            }
+            
+            
+            y = y + 1;
+        }
+    }
+    
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
         
         if(Game.spawns.Spawn1.renewCreep(creep) == 0){
             Memory.lastSpawn = 0;
-            console.log("creep successfully renewed")
         }
         
         if(creep.memory.role == 'harvester') {
             creep.memory.harvesting = true;
-            creepsCount.set('harvester', creepsCount.get('harvester') + 1);
-            roleHarvester.run(creep);
+            creepsCount.set('harvester', creepsCount.get('harvester') + .2);
+            slots = roleHarvester.run(creep,slots);
         }
         else if(creep.memory.role == 'upgrader') {
+            Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
             creep.memory.harvesting = true;
-            creepsCount.set('upgrader', creepsCount.get('upgrader') + 1);
-            roleUpgrader.run(creep);
+            creepsCount.set('upgrader', creepsCount.get('upgrader') + .6);
+            slots = roleUpgrader.run(creep,slots);
         }
         else if(creep.memory.role == 'builder') {
+            Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
             creep.memory.harvesting = true;
-            creepsCount.set('builder', creepsCount.get('builder') + 1);
-            roleBuilder.run(creep);
+            creepsCount.set('builder', creepsCount.get('builder') + .6);
+            slots = roleBuilder.run(creep,slots);
         }
         else if(creep.memory.role == 'footman') {
             creep.memory.harvesting = true;
-            creepsCount.set('footman', creepsCount.get('footman') + 1);
-            roleFootman.run(creep);
+            creepsCount.set('footman', creepsCount.get('footman') + .4);
+            slots = roleFootman.run(creep,slots);
         }
         else if(creep.memory.role == 'warrior') {
             creep.memory.harvesting = true;
             creepsCount.set('warrior', creepsCount.get('warrior') + 1);
-            roleWarrior.run(creep);
+            slots = roleWarrior.run(creep,slots);
         }
     }
     for(var s in Game.spawns){
@@ -210,7 +250,7 @@ module.exports.loop = function () {
 
 
         var spawn= Game.spawns[s];
-        if(totalCapacity == totalEnergy || spawn.memory.lastSpawn > 200){
+        if(totalCapacity*.9 <= totalEnergy || spawn.memory.lastSpawn > 200){
             spawn.memory.lastSpawn = 0;
             var min = 'harvester';
             var minValue = Number.MAX_VALUE;
@@ -222,15 +262,18 @@ module.exports.loop = function () {
             }
             spawnCreep(min,spawn,totalEnergy);
         }
-        else if(spawn.energy == spawn.energyCapacity){
-            spawn.memory.lastSpawn = spawn.memory.lastSpawn + 1;
-        }
     }
-    
+    /*
     for(var i in Memory.creeps) {
         if(Object.keys(Memory.creeps[i]).length == 0) {
             delete Memory.creeps[i];
         }
     }
+    
+    for(var i in Memory.creeps) {
+        if(!Game.creeps[i]) {
+            delete Memory.creeps[i];
+        }
+    }*/
 }
     

@@ -3,7 +3,7 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep) {
+    run: function(creep, slots) {
         var sourcesChecking = creep.room.find(FIND_CONSTRUCTION_SITES);
 	     
 	     var structures = creep.room.find(FIND_STRUCTURES);
@@ -17,8 +17,8 @@ var roleBuilder = {
 		}
 	        
 	    if(sourcesChecking.length == 0){
-	        roleHarvester.run(creep);
-	        return;
+	        slots = roleHarvester.run(creep,slots);
+	        return slots;
 	    }
 	    if(creep.memory.building && creep.carry.energy == 0) {
             creep.memory.building = false;
@@ -28,7 +28,9 @@ var roleBuilder = {
 	    }
 
 	    if(creep.memory.building) {
+	        
 	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+	        
 	        
             if(!targets.length || targets.length == 0){
                 targets = creep.room.find(STRUCTURE_WALL);
@@ -36,26 +38,31 @@ var roleBuilder = {
             
             if(!targets.length || targets.length == 0){
                 targets = damaged;
-                console.log("targets:"  + targets.length);
             }
             
             if(targets.length) {
-                if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0]);
+                var selection = 0;
+                for(var q in targets){
+                    if(targets[q].structureType == STRUCTURE_EXTRACTOR)
+                    {
+                        selection = q;
+                    }
+                }
+                if(creep.build(targets[q]) == ERR_NOT_IN_RANGE) {
+	                creep.moveTo(targets[q]);
+                    return slots;
                 }
             }
 	    }
-	    else {
-	        if(Game.spawns.Spawn1.energy == Game.spawns.Spawn1.energyCapacity){
-	            if(Game.spawns.Spawn1.transferEnergy(creep) == ERR_NOT_IN_RANGE)
-	            {
-	                creep.moveTo(creep.room.spawns[0]);
-	            }
-	            return;
+	    else{
+	        if(creep.room.energyAvailable < creep.room.energyCapacityAvailable * .1){
+	            slots = roleHarvester.run(creep,slots);
 	        }
-	        
-	        roleHarvester.run(creep);
+	        else{
+	            creep.moveTo(Game.spawns.Spawn1);
+	        }
 	    }
+	    return slots;
 	}
 };
 
