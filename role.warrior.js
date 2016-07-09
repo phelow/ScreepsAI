@@ -9,7 +9,7 @@
 
 var roleHarvester = require('role.harvester');
 module.exports = {
-    run: function(creep,slots,droppedEnergy,sourcesAll) {
+    run: function(creep,slots,droppedEnergy,sourcesAll,targets) {
         if(creep.carry.energy == creep.carryCapacity){
             if(creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns.Spawn1);   
@@ -25,18 +25,7 @@ module.exports = {
             return slots;
         }
         
-        var targets = creep.room.find(FIND_HOSTILE_CREEPS);
-        
-        if(targets.length == 0){
-            targets = creep.room.find(FIND_HOSTILE_STRUCTURES);
-        }
-        
-        if(targets.length == 0){
-            targets = creep.room.find(FIND_HOSTILE_SPAWNS);
-        }
-        
 		if (targets.length > 0) {
-		    console.log(41);
 		    //find the best enemy to attack
 		    var enemyIndex = 0;
 			creep.moveTo(targets[enemyIndex]);

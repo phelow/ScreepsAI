@@ -173,6 +173,10 @@ module.exports.loop = function () {
     var droppedEnergy = [[]];
     var sourcesAll = [[]];
     var roomss = [];
+    var sourcesChecking = [[]];
+    var structures = [[]];
+    var targets = [[]];
+    
     roomss.push(Game.spawns.Spawn1.room);
     for(var s in Game.creeps){
         console.log(Game.creeps[s].room);
@@ -198,6 +202,10 @@ module.exports.loop = function () {
             }
             slots[r.name].push(0);        
             droppedEnergy[r.name] = (r.find(FIND_DROPPED_RESOURCES));
+            sourcesChecking[r.name] = r.find(FIND_CONSTRUCTION_SITES);
+            structures[r.name] = r.find(FIND_STRUCTURES);
+            targets[r.name] = r.find(FIND_HOSTILE_CREEPS);
+            targets[r.name].push(r.find(FIND_HOSTILE_STRUCTURES))
             sourcesAll[r.name] = (r.find(FIND_SOURCES));
             console.log(slots + r.name);
             var pos = sources[source].pos;
@@ -256,17 +264,17 @@ module.exports.loop = function () {
             Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
             creep.memory.harvesting = true;
             creepsCount.set('builder', creepsCount.get('builder') + .6);
-            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name]);
+            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],sourcesChecking[creep.room.name],structures[creep.room.name]);
         }
         else if(creep.memory.role == 'footman') {
             creep.memory.harvesting = true;
             creepsCount.set('footman', creepsCount.get('footman') + .1);
-            slots = roleFootman.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name]);
+            slots = roleFootman.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],targets[creep.room.name]);
         }
         else if(creep.memory.role == 'warrior') {
             creep.memory.harvesting = true;
             creepsCount.set('warrior', creepsCount.get('warrior') + 1);
-            slots = roleWarrior.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name]);
+            slots = roleWarrior.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],targets[creep.room.name]);
         }
     }
     

@@ -3,10 +3,7 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sourcesAll) {
-        var sourcesChecking = creep.room.find(FIND_CONSTRUCTION_SITES);
-	     
-	     var structures = creep.room.find(FIND_STRUCTURES);
+    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures) {
 		 var damaged = [ ];
 
 		for(var index in structures)
