@@ -26,8 +26,10 @@ module.exports = {
 		    {
         		var spawnPos= sources[source].pos;
         		//TODO: pick better spawn points
-        		var xOffset = Math.round(Math.random() * 4 -2);
-        		var yOffset = Math.round(Math.random() * 4 -2);
+        		var xOffset = Math.round(Math.random() * 10 -5);
+        		var yOffset = Math.round(Math.random() * 10 -5);
+                var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_TOWER);
+                var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_SPAWN);
         		
                 var result = Game.spawns.Spawn1.room.createConstructionSite(spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_EXTENSION);
 		    }

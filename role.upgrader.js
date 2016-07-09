@@ -11,7 +11,7 @@ var roleUpgrader = {
         return steps + information.getHarvestTime(source, creep.room);
     },
     /** @param {Creep} creep **/
-    run: function(creep,slots) {
+    run: function(creep,slots,droppedEnergy,sourcesAll) {
         timeToFullHarvest++;
 
         if(creep.memory.upgrading && creep.carry.energy == 0) {
@@ -35,8 +35,8 @@ var roleUpgrader = {
 	            }
 	            return slots;
 	        }
-	        if(creep.room.energyAvailable < creep.room.energyCapacityAvailable * .1){
-	            return roleHarvester.run(creep,slots);
+	        if(creep.room.energyAvailable < creep.room.energyCapacityAvailable * .1 || slots[0] > 0){
+	            slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
 	        }
 	        else{
 	            creep.moveTo(Game.spawns.Spawn1);

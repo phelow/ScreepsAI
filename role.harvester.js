@@ -1,40 +1,22 @@
+//Train to harvest in other rooms
 var roleHarvester = {
+    chooseHarvestIndex: function(creep,slots){
+        creep.memory.harvestIndex = 0;
+        var y = 0;
+        for(var s in slots[creep.room.name]){
+            if(slots[creep.room.name][y] > slots[creep.room.name][creep.memory.harvestIndex]){
+                creep.memory.harvestIndex = y;
+            }
+            y = y + 1;
+        }
+        
+        if(slots[creep.room.name][creep.memory.harvestIndex] <= 0){
+            creep.memory.harvestIndex = -1;
+        }
+    },
+    
     /** @param {Creep} creep **/
-    run: function(creep, slots) {
-        console.log("Printing slots in harvester");
-        console.log(slots);
-        
-        var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES);
-        
-        var sources = creep.room.find(FIND_SOURCES);
-        
-        if(!(creep.memory.harvestIndex && creep.memory.harvestIndex != -1 && sources.length > 0)){
-            console.log(sources)
-            creep.memory.harvestIndex = 0;
-            var y = 0;
-            for(var s in sources){
-                console.log(s);
-                if(slots[y] > slots[creep.memory.harvestIndex]){
-                    console.log(slots[y] + ">" + slots[creep.memory.harvestIndex]);
-                    creep.memory.harvestIndex = y;
-                }
-                y = y + 1;
-                
-            }
-            
-        }
-        slots[creep.memory.harvestIndex] = slots[creep.memory.harvestIndex]-1;
-        
-        
-        console.log("Printing slots in harvester after removing one slot for this harvester");
-        console.log(slots);
-        
-        if(creep.carry.energy == creep.carryCapacity){
-            creep.memory.harvesting = false;
-            if(creep.memory.TimeToFullHarvest > 1){
-            //    information.logHarvestTime(creep.memory.TimeToFullHarvest,sources[creep.memory.harvestIndex].pos.x,sources[creep.memory.harvestIndex].pos.y, creep);
-            }
-        }
+    run: function(creep, slots,droppedEnergy,sources) {
         
         if(creep.memory.TimeToFullHarvest == 'undefined'){
             creep.memory.TimeToFullHarvest = 0;
@@ -42,36 +24,44 @@ var roleHarvester = {
         if(creep.memory.harvesting == 'undefined'){
             creep.memory.harvesting = true;
         }
-        creep.memory.TimeToFullHarvest++;
+        
+        
+        if(!(creep.memory.harvestIndex && creep.memory.harvestIndex >-1 && sources.length > 0) || creep.memory.harvestIndex == -1){
+            this.chooseHarvestIndex(creep,slots);
+            
+        }
+        
+        if(creep.memory.harvestIndex == -1){
+            creep.moveTo(creep.pos.findClosestByRange(exitDir,FIND_EXIT_TOP));
+        }
+        slots[creep.room.name][creep.memory.harvestIndex] = slots[creep.room.name][creep.memory.harvestIndex]-1;
+        
+        if(creep.carry.energy == creep.carryCapacity){
+            creep.memory.harvesting = false;
+        }
+        
 	    if(creep.memory.harvesting) {
             /**find the best source and harvest that**/
             if(droppedEnergy.length > 0){
                 
-                if(creep.pickup(droppedEnergy[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(droppedEnergy[0]);
+                if(creep.pickup(droppedEnergy[1]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(droppedEnergy[1]);
                 }
-                return;
+                return slots;
             }
             
-            if(sources.length == 0){
-                
-            }
-            else{
-                if(creep.harvest(sources[creep.memory.harvestIndex]) == ERR_NOT_IN_RANGE) {
+            if(sources.length > 0){
+                if(creep.harvest(sources[creep.memory.harvestIndex]) == ERR_NOT_IN_RANGE){
                     creep.moveTo(sources[creep.memory.harvestIndex]);
                 }
             }
         }
         else {
+            
+            
             creep.memory.harvestIndex = 0;
             var j = 0;
-            for(var s in sources){
-                if(slots[j] > slots[creep.memory.harvestIndex]){
-                    creep.memory.harvestIndex = j;
-                }
-                j = j +1;
-                slots[creep.memory.harvestIndex] = slots[creep.memory.harvestIndex]-1;
-            }
+            this.chooseHarvestIndex(creep,slots);
             var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_TOWER ) 

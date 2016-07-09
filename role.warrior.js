@@ -9,23 +9,20 @@
 
 var roleHarvester = require('role.harvester');
 module.exports = {
-    run: function(creep,slots) {
-        console.log("warrior")
+    run: function(creep,slots,droppedEnergy,sourcesAll) {
         if(creep.carry.energy == creep.carryCapacity){
-            console.log("retuning");
             if(creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns.Spawn1);   
             }
-            return;
+            return slots;
             
         }
         var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES);
         if(droppedEnergy.length > 0){
-            console.log("pursuing dropped energy")
             if(creep.pickup(droppedEnergy[0]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(droppedEnergy[0]);
             }
-            return;
+            return slots;
         }
         
         var targets = creep.room.find(FIND_HOSTILE_CREEPS);
@@ -42,29 +39,11 @@ module.exports = {
 		    console.log(41);
 		    //find the best enemy to attack
 		    var enemyIndex = 0;
-            for(var i = 0; i < targets.length; i++){
-                if(this.sourceSelectionPoints(sources[i],creep) < this.sourceSelectionPoints(sources[enemyIndex],creep)){
-                    enemyIndex = i;
-                }   
-            
-            }
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
-            console.log("engaging enemy");
 			creep.moveTo(targets[enemyIndex]);
 			creep.attack(targets[enemyIndex]);
 		}
 		else {
-		    creep.moveTo(Game.spawns.Spawn1);
+		    return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
 		}
 		return slots;
 	}

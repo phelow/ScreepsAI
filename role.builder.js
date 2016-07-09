@@ -3,7 +3,7 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep, slots) {
+    run: function(creep, slots,droppedEnergy,sourcesAll) {
         var sourcesChecking = creep.room.find(FIND_CONSTRUCTION_SITES);
 	     
 	     var structures = creep.room.find(FIND_STRUCTURES);
@@ -17,7 +17,7 @@ var roleBuilder = {
 		}
 	        
 	    if(sourcesChecking.length == 0){
-	        slots = roleHarvester.run(creep,slots);
+	        slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
 	        return slots;
 	    }
 	    if(creep.memory.building && creep.carry.energy == 0) {
@@ -55,8 +55,8 @@ var roleBuilder = {
             }
 	    }
 	    else{
-	        if(creep.room.energyAvailable < creep.room.energyCapacityAvailable * .1){
-	            slots = roleHarvester.run(creep,slots);
+	        if(creep.room.energyAvailable < creep.room.energyCapacityAvailable * .1 || slots[0] > 0){
+	            slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
 	        }
 	        else{
 	            creep.moveTo(Game.spawns.Spawn1);
