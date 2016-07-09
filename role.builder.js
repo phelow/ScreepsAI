@@ -3,9 +3,9 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures) {
-        if(Game.creeps < 5){
-            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures);
+    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop) {
+        if(pop < 5){
+            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll);
         }
         
 		 var damaged = [ ];
@@ -45,16 +45,16 @@ var roleBuilder = {
                 targets = damaged;
             }
             
-            if(targets.length) {
+            if(targets.length > 0) {
                 var selection = 0;
                 for(var q in targets){
-                    if(targets[q].structureType == STRUCTURE_EXTRACTOR)
+                    if(targets[q].structureType == STRUCTURE_EXTENSION)
                     {
                         selection = q;
                     }
                 }
-                if(creep.build(targets[q]) == ERR_NOT_IN_RANGE) {
-	                creep.moveTo(targets[q]);
+                if(creep.build(targets[selection]) == ERR_NOT_IN_RANGE) {
+	                creep.moveTo(targets[selection]);
                     return slots;
                 }
             }

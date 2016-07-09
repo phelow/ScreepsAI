@@ -15,8 +15,86 @@ var roleHarvester = {
         }
     },
     
+    pickDirection: function(creep){
+        var r = Math.random() * 100;
+           
+            creep.memory.dir = FIND_EXIT_RIGHT;
+            if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                creep.memory.dir = FIND_EXIT_BOTTOM;
+                
+            }
+            if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                creep.memory.dir = FIND_EXIT_LEFT;
+                
+            }
+            if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                creep.memory.dir = FIND_EXIT_TOP;
+                
+            }
+           
+            
+            if(r > 25){
+                if(creep.pos.findClosestByRange(FIND_EXIT_BOTTOM)){
+                    creep.memory.dir = FIND_EXIT_BOTTOM;
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_RIGHT;
+                        
+                    }
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_LEFT;
+                        
+                    }
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_TOP;
+                        
+                    }
+                }
+            }
+            if(r > 50){
+                if(creep.pos.findClosestByRange(FIND_EXIT_LEFT)){
+                    creep.memory.dir = FIND_EXIT_LEFT;
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_RIGHT;
+                        
+                    }
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_BOTTOM;
+                        
+                    }
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_TOP;
+                        
+                    }
+                }
+            }
+            if(r > 75){
+                if(creep.pos.findClosestByRange(FIND_EXIT_TOP)){
+                    creep.memory.dir = FIND_EXIT_TOP;
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_RIGHT;
+                        
+                    }
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_LEFT;
+                        
+                    }
+                    if(creep.pos.findClosestByRange(creep.memory.dir) == null){
+                        creep.memory.dir = FIND_EXIT_BOTTOM;
+                        
+                    }
+                }
+            }
+        
+    },
+    
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sources) {
+    run: function(creep, slots,droppedEnergy,sources, roads) {
+        if(roads){
+            var result = Game.spawns.Spawn1.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
+        }
+        if(!creep.memory.dir){
+            this.pickDirection(creep);   
+        }
         
         if(creep.memory.TimeToFullHarvest == 'undefined'){
             creep.memory.TimeToFullHarvest = 0;
@@ -32,20 +110,25 @@ var roleHarvester = {
         }
         
         if(creep.memory.harvestIndex == -1){
-            creep.moveTo(creep.pos.findClosestByRange(exitDir,FIND_EXIT_TOP));
+            if(creep.moveTo(creep.pos.findClosestByRange(creep.memory.dir)) != ERR_NOT_IN_RANGE){
+                this.pickDirection(creep);
+            }
         }
         slots[creep.room.name][creep.memory.harvestIndex] = slots[creep.room.name][creep.memory.harvestIndex]-1;
         
         if(creep.carry.energy == creep.carryCapacity){
             creep.memory.harvesting = false;
+        }else if(creep.carry.energy == 0){
+            creep.memory.harvesting = true;
+                        
         }
         
 	    if(creep.memory.harvesting) {
             /**find the best source and harvest that**/
             if(droppedEnergy.length > 0){
                 
-                if(creep.pickup(droppedEnergy[1]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(droppedEnergy[1]);
+                if(creep.pickup(droppedEnergy[0]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(droppedEnergy[0]);
                 }
                 return slots;
             }
@@ -92,12 +175,11 @@ var roleHarvester = {
                     creep.moveTo(targets[0]);
                     creep.memory.TimeToFullHarvest = 0;
                     
-                    if(creep.carry.energy == 0){
-                        creep.memory.harvestIndex = Math.round(Math.random() * (sources.length-1));
-                        creep.memory.harvesting = true;
-                        
-                    }
                 }
+            }
+            
+            if(targets.length == 0){
+                creep.moveTo(Game.spawns.Spawn1);
             }
         }
         return slots;

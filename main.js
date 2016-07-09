@@ -144,6 +144,8 @@ var spawnCreep = function(type, spawn, energy) {
 }
 
 module.exports.loop = function () {
+    var pop = 0;
+    for (var i in Game.creeps) { pop++ }
     
     if(Math.random() * 100 > 90){
         construction.buildRoadToAllSources();
@@ -152,16 +154,6 @@ module.exports.loop = function () {
     var roleHarvester = require('role.harvester');
     var roleUpgrader = require('role.upgrader');
     var roleBuilder = require('role.builder');
-
-    var towers = Game.spawns.Spawn1.room.find(STRUCTURE_TOWER);
-    var tower = towers[0];
-    if(tower) {
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if(closestHostile) {
-            tower.attack(closestHostile);
-        }
-    }
-    
     
     var creepsCount = new Map();
     creepsCount.set('harvester',0);
@@ -177,38 +169,41 @@ module.exports.loop = function () {
     var sourcesChecking = [[]];
     var structures = [[]];
     var targets = [[]];
+    var enemyStructures = [[]];
     
     roomss.push(Game.spawns.Spawn1.room);
     for(var s in Game.creeps){
-        console.log(Game.creeps[s].room);
         roomss.push(Game.creeps[s].room);
-        console.log(roomss[0]);
     }
     
     var roomss =new Set(roomss);
-    console.log(roomss);
-    for (let item of roomss) console.log(item);
     
     for(let r of roomss)
     {
-        console.log("186" + r);
+        var towers = r.find(STRUCTURE_TOWER);
+        var tower = towers[0];
+        if(tower) {
+            var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            if(closestHostile) {
+                tower.attack(closestHostile);
+            }
+        }
+        
+        
         var y = 0;
         var sources = r.find(FIND_SOURCES);
+        droppedEnergy[r.name] = (r.find(FIND_DROPPED_RESOURCES));
+        sourcesChecking[r.name] = r.find(FIND_CONSTRUCTION_SITES);
+        structures[r.name] = r.find(FIND_STRUCTURES);
+        targets[r.name] = r.find(FIND_HOSTILE_CREEPS);
+        enemyStructures[r.name] = r.find(FIND_HOSTILE_STRUCTURES);
+        
+        sourcesAll[r.name] = (r.find(FIND_SOURCES));
+        slots[r.name] = [0];
         
         for(var source in sources)
         {
-            if(!slots[r.name])
-            {
-                slots[r.name] = [0];
-            }
             slots[r.name].push(0);        
-            droppedEnergy[r.name] = (r.find(FIND_DROPPED_RESOURCES));
-            sourcesChecking[r.name] = r.find(FIND_CONSTRUCTION_SITES);
-            structures[r.name] = r.find(FIND_STRUCTURES);
-            targets[r.name] = r.find(FIND_HOSTILE_CREEPS);
-            targets[r.name].push(r.find(FIND_HOSTILE_STRUCTURES))
-            sourcesAll[r.name] = (r.find(FIND_SOURCES));
-            console.log(slots + r.name);
             var pos = sources[source].pos;
             
             if(Game.map.getTerrainAt(pos.x + 1,pos.y,sources[source].room.name) != 'wall')
@@ -253,19 +248,23 @@ module.exports.loop = function () {
         if(creep.memory.role == 'harvester') {
             creep.memory.harvesting = true;
             creepsCount.set('harvester', creepsCount.get('harvester') + .2);
-            slots = roleHarvester.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name]);
+            slots = roleHarvester.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],true);
         }
         else if(creep.memory.role == 'upgrader') {
-            Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
+            if(pop > 5){
+                Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
+            }
             creep.memory.harvesting = true;
             creepsCount.set('upgrader', creepsCount.get('upgrader') + .6);
-            slots = roleUpgrader.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name]);
+            slots = roleUpgrader.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],pop);
         }
         else if(creep.memory.role == 'builder') {
-            Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
+            if(pop > 5){
+                Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
+            }
             creep.memory.harvesting = true;
             creepsCount.set('builder', creepsCount.get('builder') + .6);
-            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],sourcesChecking[creep.room.name],structures[creep.room.name]);
+            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],sourcesChecking[creep.room.name],structures[creep.room.name],pop);
         }
         else if(creep.memory.role == 'footman') {
             creep.memory.harvesting = true;
@@ -275,7 +274,7 @@ module.exports.loop = function () {
         else if(creep.memory.role == 'warrior') {
             creep.memory.harvesting = true;
             creepsCount.set('warrior', creepsCount.get('warrior') + 1);
-            slots = roleWarrior.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],targets[creep.room.name]);
+            slots = roleWarrior.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll[creep.room.name],targets[creep.room.name],enemyStructures[creep.room.name]);
         }
     }
     

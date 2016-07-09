@@ -11,9 +11,9 @@ var roleUpgrader = {
         return steps + information.getHarvestTime(source, creep.room);
     },
     /** @param {Creep} creep **/
-    run: function(creep,slots,droppedEnergy,sourcesAll) {
-        if(Game.creeps < 5){
-            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures);
+    run: function(creep,slots,droppedEnergy,sourcesAll,pop) {
+        if(pop < 5){
+            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll);
         }
         
         timeToFullHarvest++;
