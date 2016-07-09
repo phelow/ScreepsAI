@@ -145,9 +145,10 @@ var spawnCreep = function(type, spawn, energy) {
 
 module.exports.loop = function () {
     
-    construction.buildRoadToAllSources();
-    construction.buildExtensions();
-    
+    if(Math.random() * 100 > 90){
+        construction.buildRoadToAllSources();
+        construction.buildExtensions();
+    }
     var roleHarvester = require('role.harvester');
     var roleUpgrader = require('role.upgrader');
     var roleBuilder = require('role.builder');

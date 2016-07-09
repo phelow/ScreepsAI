@@ -12,13 +12,22 @@ var roleUpgrader = {
     },
     /** @param {Creep} creep **/
     run: function(creep,slots,droppedEnergy,sourcesAll) {
+        if(Game.creeps < 5){
+            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures);
+        }
+        
         timeToFullHarvest++;
-
+        
         if(creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;
 	    }
 	    if(!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
 	        creep.memory.upgrading = true;
+	    }
+	    else{   
+            if((creep.room.energyAvailable < creep.room.energyCapacityAvailable * .5) && creep.carry.energy == 0){
+                return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
+            }
 	    }
 
 	    if(creep.memory.upgrading) {
@@ -27,20 +36,10 @@ var roleUpgrader = {
             }
         }
         else {
-            
-	        if(Game.spawns.Spawn1.energy == Game.spawns.Spawn1.energyCapacity){
-	            if(creep.room.spawns && creep.room.spawns[0].transferEnergy(creep) == ERR_NOT_IN_RANGE)
-	            {
-	                creep.moveTo(creep.room.spawns[0]);
-	            }
-	            return slots;
-	        }
-	        if(creep.room.energyAvailable < creep.room.energyCapacityAvailable * .1 || slots[0] > 0){
-	            slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
-	        }
-	        else{
-	            creep.moveTo(Game.spawns.Spawn1);
-	        }
+            if((creep.room.energyAvailable < creep.room.energyCapacityAvailable * .6)){
+                return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
+            }
+	        creep.moveTo(Game.spawns.Spawn1);
         }
         return slots;
 	}
