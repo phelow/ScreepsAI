@@ -17,15 +17,14 @@ module.exports = {
             return slots;
             
         }
-        var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES);
-        if(droppedEnergy.length > 0){
+        if(typeof(droppedEnergy) != 'undefined' && droppedEnergy.length > 0){
             if(creep.pickup(droppedEnergy[0]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(droppedEnergy[0]);
             }
             return slots;
         }
         
-		if (targets.length > 0) {
+		if (typeof(targets) != 'undefined' && targets.length > 0) {
 		    //find the best enemy to attack
 		    var enemyIndex = 0;
 			if(creep.moveTo(targets[enemyIndex]) == ERR_NO_PATH)
@@ -38,10 +37,10 @@ module.exports = {
 			}
 		}
 		else {
-		    if(structures.length > 0){
+		    if(typeof(structures) != 'undefined' && structures.length > 0){
     			creep.moveTo(structures[enemyIndex]);
     			creep.attack(structures[enemyIndex]);
-		        
+		        return slots
 		    }
 		    return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
 		}

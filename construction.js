@@ -8,20 +8,10 @@
  */
  
 module.exports = {
-	buildRoads: function(from, to)
+	buildExtensions: function(sources)
 	{
-		var path = Game.spawns.Spawn1.room.findPath(from, to, { ignoreCreeps: true });
-		for(var i in path)
+		for(var spawn in sources)
 		{
-			var result = Game.spawns.Spawn1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD);
-		}
-	},
-	
-	buildExtensions: function()
-	{
-		for(var spawn in Game.spawns)
-		{
-		    var sources = Game.spawns[spawn].room.find(FIND_SOURCES);
 		    for(var source in sources)
 		    {
         		var spawnPos= sources[source].pos;
@@ -35,21 +25,5 @@ module.exports = {
 		    }
            
 		}
-	},
-	
-
-	buildRoadToAllSources: function()
-	{
-		var sources = Game.spawns.Spawn1.room.find(FIND_SOURCES);
-		for(var i in sources)
-		{
-		    var extensions = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES);
-		    for(var e in extensions){
-			    this.buildRoads(extensions[e].pos, sources[i].pos);
-		    }
-			this.buildRoads(Game.spawns.Spawn1.pos, sources[i].pos);
-		}
-		
-		
-	},
+	}
 };

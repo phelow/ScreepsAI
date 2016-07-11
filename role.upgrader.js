@@ -12,6 +12,7 @@ var roleUpgrader = {
     },
     /** @param {Creep} creep **/
     run: function(creep,slots,droppedEnergy,sourcesAll,pop) {
+        var result = Game.spawns.Spawn1.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
         if(pop < 5){
             return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll);
         }
