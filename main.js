@@ -164,6 +164,7 @@ module.exports.loop = function () {
     creepsCount.set('warrior',0);
     
     var slots = [[]];
+    var constructionSites = [[]];
     var droppedEnergy = [[]];
     var sourcesAll = [[]];
     var roomss = [];
@@ -205,6 +206,7 @@ module.exports.loop = function () {
         
         var sources = r.find(FIND_SOURCES);
         construction.buildExtensions(sources);
+        constructionSites[r.name] = r.find(FIND_CONSTRUCTION_SITES);
         droppedEnergy[r.name] = (r.find(FIND_DROPPED_RESOURCES));
         sourcesChecking[r.name] = r.find(FIND_CONSTRUCTION_SITES);
         structures[r.name] = r.find(FIND_STRUCTURES);
@@ -278,7 +280,7 @@ module.exports.loop = function () {
         else if(creep.memory.role == 'builder') {
             creep.memory.harvesting = true;
             creepsCount.set('builder', creepsCount.get('builder') + .6);
-            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,sourcesChecking[creep.room.name],structures[creep.room.name],pop,enemyStructures[creep.room.name]);
+            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,sourcesChecking[creep.room.name],structures[creep.room.name],pop,enemyStructures[creep.room.name],constructionSites[creep.room.name]);
             creep.memory.lastPos = creep.pos;
         }
         else if(creep.memory.role == 'footman') {

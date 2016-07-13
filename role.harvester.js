@@ -1,3 +1,4 @@
+//TODO: keep track of how much energy is being delivered to each structure, do not deliver more than that amount
 var roleHarvester = {
     chooseHarvestIndex: function(creep,slots){
         
@@ -44,6 +45,15 @@ var roleHarvester = {
         
         creep.memory.dir = Math.round(Math.random() * numExits);
         
+        if(typeof(Memory[creep.room.name+ " " + creep.memory.dir]) == 'undefined'){
+            Memory[creep.room.name+ " " + creep.memory.dir] = true;
+        }
+        
+        for(var i = 0; i < 10 && false == Memory[creep.room.name+ " " + creep.memory.dir]; i++){
+            creep.memory.dir = Math.round(Math.random() * numExits);
+        }
+        creep.memory.lastRoomCalculated = creep.room.name;
+        
     },
     
     /** @param {Creep} creep **/
@@ -73,9 +83,13 @@ var roleHarvester = {
         }
         
         if(creep.memory.room != creep.room.name){
+            var lastRoom = creep.memory.lastRoomCalculated;
+            var lastDir = creep.memory.dir;
             this.chooseHarvestIndex(creep,slots);
             this.pickDirection(creep);
-            
+            if(creep.memory.harvestIndex == -1){
+                Memory[lastRoom + " " + lastDir] = false;
+            }
         }
         creep.memory.room = creep.room.name;
         
@@ -133,7 +147,23 @@ var roleHarvester = {
             }
             
             if(creep.memory.role == "harvester"){
-                var result = creep.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
+                if(typeof(Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y]) == 'undefined'){
+                    Memory[creep.room.roomName + " " + creep.pos.x + " " + creep.pos.y] = 0;
+                }
+                if(typeof(Memory['stepsAverage']) == 'undefined'){
+                    Memory['stepsAverage'] = 1;
+                }
+                Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y] =Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y] + 1;
+                Memory['stepsAverage'] = Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y]*.01 +Memory['stepsAverage']*.99;
+                if(Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y] > Memory['stepsAverage'] * 5){
+                    var result = creep.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
+                    console.log("creating site");
+                    
+                    
+                }
+                else{
+                    console.log("not creating step");
+                }
             }
             if(typeof(sources) != 'undefined' ){
                 if(typeof(sources[creep.memory.roomName]) == 'undefined'){

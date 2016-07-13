@@ -3,7 +3,7 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop,enemyStrctures) {
+    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop,enemyStrctures,constructionSites) {
         if(pop < 5){
             return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,enemyStrctures);
         }
@@ -29,28 +29,24 @@ var roleBuilder = {
 	    }
 
 	    if(creep.memory.building) {
-	        
-	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-	        
-	        
-            if(!targets.length || targets.length == 0){
+	       if(!constructionSites.length || constructionSites.length == 0){
                 targets = creep.room.find(STRUCTURE_WALL);
             }
             
-            if(!targets.length || targets.length == 0){
+            if(!constructionSites.length || constructionSites.length == 0){
                 targets = damaged;
             }
             
-            if(targets.length > 0) {
+            if(constructionSites.length > 0) {
                 var selection = 0;
-                for(var q in targets){
-                    if(targets[q].structureType == STRUCTURE_EXTENSION)
+                for(var q in constructionSites){
+                    if(constructionSites[q].structureType == STRUCTURE_EXTENSION)
                     {
                         selection = q;
                     }
                 }
-                if(creep.build(targets[selection]) == ERR_NOT_IN_RANGE) {
-	                creep.moveTo(targets[selection]);
+                if(creep.build(constructionSites[selection]) == ERR_NOT_IN_RANGE) {
+	                creep.moveTo(constructionSites[selection]);
                     return slots;
                 }
             }

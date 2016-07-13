@@ -48,15 +48,10 @@ module.exports = {
 		        creep.moveTo(structures[enemyIndex]);
 		        creep.withdraw(structures[enemyIndex],RESOURCE_ENERGY);
 		    }
-		    
-			if(creep.moveTo(targets[enemyIndex]) == ERR_NO_PATH)
-			{
-			   creep.moveTo(creep.room.findClosestByPath(FIND_STRUCTURES));
-			   creep.attack(creep.room.findClosestByPath(FIND_STRUCTURES));
-			}
-			else{
-			    creep.attack(targets[enemyIndex]);
-			}
+		    else{
+		        creep.moveTo(structures[enemyIndex]);
+		        creep.attack(structures[enemyIndex]);
+		    }
 		}
 		else {
 		    if(typeof(structures) != 'undefined' && structures.length > 0){
