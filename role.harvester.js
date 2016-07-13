@@ -89,6 +89,8 @@ var roleHarvester = {
             this.pickDirection(creep);
             if(creep.memory.harvestIndex == -1){
                 Memory[lastRoom + " " + lastDir] = false;
+            }else{
+                Memory[lastRoom + " " + lastDir] = true;
             }
         }
         creep.memory.room = creep.room.name;

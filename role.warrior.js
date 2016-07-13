@@ -29,11 +29,25 @@ module.exports = {
 		if (typeof(targets) != 'undefined' && targets.length > 0) {
 		    //find the best enemy to attack
 		    var enemyIndex = -1;
+		    for(var e in targets){
+		        if(targets[e].owner.username != "keyboardkommander" || targets[e].owner.username != 'thiesp'){
+		            enemyIndex = e;
+		        }
+		        
+		    }
+		    
+		    if(enemyIndex != -1){
+		        
+		        creep.moveTo(structures[enemyIndex]);
+		        creep.attack(structures[enemyIndex]);
+		        return slots;
+		    }
+		    
 		    //pick a target
 		    var siphon = false;
 		    
 		    for(var e in structures){
-		        if(structures[e].owner.username != "keyboardkommander"){
+		        if(structures[e].owner.username != "keyboardkommander" || structures[e].owner.username != 'thiesp'){
 		            if(structures[e].energyAvailable > 0){
 		                enemyIndex = e;
 		                siphon = true;

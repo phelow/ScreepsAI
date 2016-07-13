@@ -286,7 +286,7 @@ module.exports.loop = function () {
         else if(creep.memory.role == 'footman') {
             creep.memory.harvesting = true;
             creepsCount.set('footman', creepsCount.get('footman') + .1);
-            slots = roleFootman.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,targets[creep.room.name],enemyStructures[creep.room.name]);
+            slots = roleWarrior.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,targets[creep.room.name],enemyStructures[creep.room.name]);
             creep.memory.lastPos = creep.pos;
         }
         else if(creep.memory.role == 'warrior') {
