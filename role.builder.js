@@ -3,9 +3,9 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop) {
+    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop,enemyStrctures) {
         if(pop < 5){
-            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll);
+            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,enemyStrctures);
         }
         
 		 var damaged = [ ];
@@ -18,7 +18,7 @@ var roleBuilder = {
 		}
 	        
 	    if(sourcesChecking.length == 0){
-	        slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
+	        slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures);
 	        return slots;
 	    }
 	    if(creep.memory.building && creep.carry.energy == 0) {
@@ -26,10 +26,6 @@ var roleBuilder = {
 	    }
 	    if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
 	        creep.memory.building = true;
-	    }else{
-            if((creep.room.energyAvailable < creep.room.energyCapacityAvailable * .5 || slots[0] > 0) && creep.carry.energy == 0){
-                return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
-            }
 	    }
 
 	    if(creep.memory.building) {
@@ -60,10 +56,7 @@ var roleBuilder = {
             }
 	    }
 	    else{
-            if((creep.room.energyAvailable <= creep.room.energyCapacityAvailable * .6)){
-                return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll);
-            }
-            creep.moveTo(Game.spawns.Spawn1);
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures);
 	        
 	    }
 	    return slots;

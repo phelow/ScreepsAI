@@ -1,3 +1,5 @@
+//TODO: train all units to steal from enemies
+//TODO: globalize all searches
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
@@ -144,6 +146,8 @@ var spawnCreep = function(type, spawn, energy) {
 }
 
 module.exports.loop = function () {
+    Game.flags.Flag1.memory.creeps = 0;
+    
     var pop = 0;
     for (var i in Game.creeps) { pop++ }
     
@@ -210,6 +214,7 @@ module.exports.loop = function () {
         
         slots[r.name] = [];
         slots[r.name][0] = 0;
+        
         for(var source in sources)
         {
             slots[r.name][source] = 0;        
@@ -261,29 +266,25 @@ module.exports.loop = function () {
         if(creep.memory.role == 'harvester') {
             creep.memory.harvesting = true;
             creepsCount.set('harvester', creepsCount.get('harvester') + .2);
-            slots = roleHarvester.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,true);
+            slots = roleHarvester.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,true,enemyStructures[creep.room.name]);
             creep.memory.lastPos = creep.pos;
         }
         else if(creep.memory.role == 'upgrader') {
-            if(pop > 5){
-                Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
-            }
             creep.memory.harvesting = true;
             creepsCount.set('upgrader', creepsCount.get('upgrader') + .6);
-            slots = roleUpgrader.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,pop);
+            slots = roleUpgrader.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,pop,enemyStructures[creep.room.name]);
             creep.memory.lastPos = creep.pos;
         }
         else if(creep.memory.role == 'builder') {
-            Game.spawns.Spawn1.transferEnergy(creep,creep.energyCapacity);
             creep.memory.harvesting = true;
             creepsCount.set('builder', creepsCount.get('builder') + .6);
-            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,sourcesChecking[creep.room.name],structures[creep.room.name],pop);
+            slots = roleBuilder.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,sourcesChecking[creep.room.name],structures[creep.room.name],pop,enemyStructures[creep.room.name]);
             creep.memory.lastPos = creep.pos;
         }
         else if(creep.memory.role == 'footman') {
             creep.memory.harvesting = true;
             creepsCount.set('footman', creepsCount.get('footman') + .1);
-            slots = roleFootman.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,targets[creep.room.name]);
+            slots = roleFootman.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,targets[creep.room.name],enemyStructures[creep.room.name]);
             creep.memory.lastPos = creep.pos;
         }
         else if(creep.memory.role == 'warrior') {
