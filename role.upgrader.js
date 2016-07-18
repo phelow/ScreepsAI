@@ -11,10 +11,10 @@ var roleUpgrader = {
         return steps + information.getHarvestTime(source, creep.room);
     },
     /** @param {Creep} creep **/
-    run: function(creep,slots,droppedEnergy,sourcesAll,pop,enemyStrctures) {
+    run: function(creep,slots,droppedEnergy,sourcesAll,pop,enemyStrctures,energyDropoffPoints,energyNeeded) {
         var result = Game.spawns.Spawn1.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
         if(pop < 5){
-            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,enemyStrctures);
+            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,enemyStrctures,energyDropoffPoints,energyNeeded);
         }
         
         timeToFullHarvest++;
@@ -32,7 +32,7 @@ var roleUpgrader = {
             }
         }
         else {
-            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures);
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures,energyDropoffPoints,energyNeeded);
         }
         return slots;
 	}

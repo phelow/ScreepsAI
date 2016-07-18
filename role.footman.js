@@ -7,7 +7,8 @@ var roleFootman = {
         
         return steps;
     },
-    run: function(creep,slots,droppedEnergy,sourcesAll,targets,enemyStrctures) {
+    
+    run: function(creep,slots,droppedEnergy,sourcesAll,targets,enemyStrcture,energyDropoffPoints,energyNeeded) {
         /*if(targets.length == 0){
             console.log("no creeps found");
         }*/
@@ -18,7 +19,7 @@ var roleFootman = {
 			creep.attack(targets[enemyIndex]);
 		}
 		else {
-            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures);
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures,energyDropoffPoints,energyNeeded);
 		}
 		return slots;
 	}

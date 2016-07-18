@@ -3,9 +3,9 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
 
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop,enemyStrctures,constructionSites) {
+    run: function(creep, slots,droppedEnergy,sourcesAll,sourcesChecking,structures,pop,enemyStrctures,constructionSites,energyDropoffPoints,energyNeeded) {
         if(pop < 5){
-            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,enemyStrctures);
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,true,enemyStrctures,energyDropoffPoints,energyNeeded);
         }
         
 		 var damaged = [ ];
@@ -16,9 +16,9 @@ var roleBuilder = {
 			if(structure.hits < (structure.hitsMax - 50))
 				damaged.push(structure);
 		}
-	        
+		
 	    if(sourcesChecking.length == 0){
-	        slots = roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures);
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,true,enemyStrctures,energyDropoffPoints,energyNeeded);
 	        return slots;
 	    }
 	    if(creep.memory.building && creep.carry.energy == 0) {
@@ -29,15 +29,17 @@ var roleBuilder = {
 	    }
 
 	    if(creep.memory.building) {
+	       var isWall = false;
 	       if(!constructionSites.length || constructionSites.length == 0){
                 targets = creep.room.find(STRUCTURE_WALL);
+                isWall = true;
             }
             
             if(!constructionSites.length || constructionSites.length == 0){
                 targets = damaged;
             }
             
-            if(constructionSites.length > 0) {
+            if(typeof(constructionSites[selection]) != 'undefined' && constructionSites.length > 0 && (constructionSites[selection].owner.name == 'keyboardkommander' || isWall)) {
                 var selection = 0;
                 for(var q in constructionSites){
                     if(constructionSites[q].structureType == STRUCTURE_EXTENSION)
@@ -50,9 +52,10 @@ var roleBuilder = {
                     return slots;
                 }
             }
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,true,enemyStrctures,energyDropoffPoints,energyNeeded);
 	    }
 	    else{
-            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures);
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,true,enemyStrctures,energyDropoffPoints,energyNeeded);
 	        
 	    }
 	    return slots;

@@ -9,13 +9,10 @@
 
 var roleHarvester = require('role.harvester');
 module.exports = {
-    run: function(creep,slots,droppedEnergy,sourcesAll,targets, structures) {
+    run: function(creep,slots,droppedEnergy,sourcesAll,targets, structures,energyDropoffPoints,energyNeeded) {
         var withdrawIndex = -1;
-        if(creep.carry.energy == creep.carryCapacity){
-            if(creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(Game.spawns.Spawn1);   
-            }
-            return slots;
+        if(creep.carry.energy == creep.carryCapacity){//run: function(creep, slots,droppedEnergy,sources, roads, enemyStructures,energyDropoffPoints,energyNeeded) 
+		    return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll, null, structures,energyDropoffPoints,energyNeeded); //TODO fix null
             
         }
         if(typeof(droppedEnergy) != 'undefined' && droppedEnergy.length > 0){
@@ -74,8 +71,8 @@ module.exports = {
 		        return slots
 		    }
 		    
-		    return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,structures);
+		    return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,structures,energyDropoffPoints,energyNeeded);
 		}
-		return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,structures);
+		return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,structures,energyDropoffPoints,energyNeeded);
 	}
 };

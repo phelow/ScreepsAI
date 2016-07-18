@@ -33,6 +33,38 @@ var roleHarvester = {
         }
     },
     
+    //Pick the closes
+    //TODO: make sure energy is getting decremented
+    chooseReturnIndex: function(creep, energyDropOff, energyNeeded){
+        var CurDropOff = -1;
+        var x = -1;
+        var y = -1;
+        for(var i in energyDropOff){
+            
+            if(energyDropOff.length > 0 && energyNeeded.length > 0){
+                for(var j in energyDropOff[i]){
+                    
+                    if(energyNeeded[i][j] > CurDropOff){
+                        CurDropOff = energyNeeded[i][j];
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+        }
+        
+        if(x != -1 && y != -1){
+            var energyWithdrawn = Math.min(_.sum(creep.carry),energyNeeded[x][y]);
+            energyNeeded[x][y] -= energyWithdrawn;
+            
+        
+            return energyDropOff[x][y];
+        }
+        else{
+            return null;   
+        }
+    },
+    
     pickDirection: function(creep){
         creep.memory.samePos = 0;
         
@@ -52,14 +84,15 @@ var roleHarvester = {
         for(var i = 0; i < 10 && false == Memory[creep.room.name+ " " + creep.memory.dir]; i++){
             creep.memory.dir = Math.round(Math.random() * numExits);
         }
-        creep.memory.lastRoomCalculated = creep.room.name;
+        creep.memory.lastRoomCalculated = ""+ creep.room.name;
         
     },
     
     /** @param {Creep} creep **/
-    run: function(creep, slots,droppedEnergy,sources, roads, enemyStructures) 
+    run: function(creep, slots,droppedEnergy,sources, roads, enemyStructures,energyDropoffPoints,energyNeeded) 
     {
-        if(creep.hits == creep.hitsMax){
+        var withdrawIndex = -1;
+        if(creep.hits == creep.hitsMax && creep.energy == 0){
             //if there are available structures to withdraw energy from do so
             //TODO: optimize
             withdrawIndex = -1;
@@ -71,7 +104,7 @@ var roleHarvester = {
                 
             }
         }
-        if(withdrawIndex > -1){
+        if(withdrawIndex > -1&& creep.energy == 0){
             if(creep.withdraw(enemyStructures[withdrawIndex], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             	creep.moveTo(enemyStructures[withdrawIndex]);    
             }
@@ -82,6 +115,11 @@ var roleHarvester = {
             creep.memory.room = creep.room.name;
         }
         
+        if(creep.carry.energy == creep.carryCapacity){
+            creep.memory.harvesting = false;
+        }else if(creep.carry.energy == 0){
+            creep.memory.harvesting = true;
+        }
         if(creep.memory.room != creep.room.name){
             var lastRoom = creep.memory.lastRoomCalculated;
             var lastDir = creep.memory.dir;
@@ -97,7 +135,8 @@ var roleHarvester = {
         
         if(typeof(creep.memory.lastX) != 'undefined' && creep.memory.lastY == creep.pos.y && creep.memory.lastX == creep.pos.x && creep.memory.stuck >= 20){
             this.pickDirection(creep);
-            this.chooseHarvestIndex(creep,slots)
+            this.chooseHarvestIndex(creep,slots);
+            harvesting = true;
             creep.memory.stuck = 0;
         }
         
@@ -138,7 +177,13 @@ var roleHarvester = {
             slots[creep.memory.roomName][creep.memory.harvestIndex] = slots[creep.memory.roomName][creep.memory.harvestIndex]-1;
         }
 	    
-	    if(creep.memory.harvesting) {
+	    if(creep.carry.energy == creep.carryCapacity){
+            creep.memory.harvesting = false;
+        }else if(creep.carry.energy == 0){
+            creep.memory.harvesting = true;
+        }
+	    
+	    if(creep.memory.harvesting == true) {
             /**find the best source and harvest that**/
             if(typeof(droppedEnergy) != 'undefined' && droppedEnergy.length > 0){
                 
@@ -159,12 +204,6 @@ var roleHarvester = {
                 Memory['stepsAverage'] = Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y]*.01 +Memory['stepsAverage']*.99;
                 if(Memory[creep.room.name + " " + creep.pos.x + " " + creep.pos.y] > Memory['stepsAverage'] * 5){
                     var result = creep.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
-                    console.log("creating site");
-                    
-                    
-                }
-                else{
-                    console.log("not creating step");
                 }
             }
             if(typeof(sources) != 'undefined' ){
@@ -178,56 +217,13 @@ var roleHarvester = {
             }
         }
         else {
-            
             creep.memory.harvestIndex = 0;
             var j = 0;
-            this.chooseHarvestIndex(creep,slots);
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_TOWER ) 
-                                && structure.energy < structure.energyCapacity;
-                    }
-            });
+            var returnTo = this.chooseReturnIndex(creep, energyDropoffPoints, energyNeeded );
             
-            if(targets.length == 0)
-            {
-                targets = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return (structure.structureType == STRUCTURE_SPAWN) 
-                                    && structure.energy < structure.energyCapacity;
-                        }
-                });
-            }
+            creep.moveTo(returnTo);
+            creep.transfer(returnTo,RESOURCE_ENERGY);
             
-            if(targets.length == 0){
-                targets = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return (structure.structureType == STRUCTURE_EXTENSION ) 
-                                    && structure.energy < structure.energyCapacity;
-                        }
-                });
-            }
-            
-            if(targets.length > 0) {
-                if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0]);
-                    creep.memory.TimeToFullHarvest = 0;
-                    if(creep.memory.role == "harvester"){
-                        var result = creep.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
-                    }
-                    return slots;
-                    
-                }
-            }
-            
-            if(targets.length == 0){
-                if(creep.memory.role == "harvester"){
-                    var result = creep.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
-                }
-                if(creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(Game.spawns.Spawn1);
-                }
-            }
         }
         return slots;
 	}
