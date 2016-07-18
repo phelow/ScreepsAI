@@ -21,10 +21,10 @@ var roleBuilder = {
             return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,true,enemyStrctures,energyDropoffPoints,energyNeeded);
 	        return slots;
 	    }
-	    if(creep.memory.building && creep.carry.energy == 0) {
+	    if(creep.carry.energy == 0) {
             creep.memory.building = false;
 	    }
-	    if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
+	    if(creep.carry.energy == creep.carryCapacity) {
 	        creep.memory.building = true;
 	    }
 
@@ -38,19 +38,26 @@ var roleBuilder = {
             if(!constructionSites.length || constructionSites.length == 0){
                 targets = damaged;
             }
+            var selection = 0;
             
-            if(typeof(constructionSites[selection]) != 'undefined' && constructionSites.length > 0 && (constructionSites[selection].owner.name == 'keyboardkommander' || isWall)) {
-                var selection = 0;
-                for(var q in constructionSites){
-                    if(constructionSites[q].structureType == STRUCTURE_EXTENSION)
-                    {
-                        selection = q;
-                    }
+                
+            for(var q in constructionSites){
+                if(constructionSites[q].structureType == STRUCTURE_EXTENSION)
+                {
+                    selection = q;
                 }
+            }
+            console.log(selection);
+            console.log(constructionSites);
+            if(constructionSites.length > 0) {
+                console.log("building");
                 if(creep.build(constructionSites[selection]) == ERR_NOT_IN_RANGE) {
 	                creep.moveTo(constructionSites[selection]);
                     return slots;
                 }
+            }
+            else{
+                console.log("not building");
             }
             return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,true,enemyStrctures,energyDropoffPoints,energyNeeded);
 	    }

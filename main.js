@@ -10,9 +10,9 @@ var roleWarrior = require('role.warrior');
 var construction = require('construction');
 
 var spawnCreep = function(type, spawn, energy) {
-    var abilitiesArray = [MOVE, CARRY];
+    var abilitiesArray = [MOVE, CARRY, WORK];
     
-    energy -= 100;
+    energy -= 200;
     
     if(type == 'harvester')
     {
@@ -339,7 +339,6 @@ module.exports.loop = function () {
             slots = roleWarrior.run(creep,slots,droppedEnergy[creep.room.name],sourcesAll,targets[creep.room.name],enemyStructures[creep.room.name],energyDropoffPoints,energyNeeded);
             creep.memory.lastPos = creep.pos;
         }
-        console.log(energyNeeded[creep.room.name]);
     }
     
     for(var s in Game.spawns){
