@@ -47,8 +47,7 @@ var roleBuilder = {
                     selection = q;
                 }
             }
-            console.log(selection);
-            console.log(constructionSites);
+            
             if(constructionSites.length > 0) {
                 console.log("building");
                 if(creep.build(constructionSites[selection]) == ERR_NOT_IN_RANGE) {

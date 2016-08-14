@@ -12,25 +12,30 @@ var roleUpgrader = {
     },
     /** @param {Creep} creep **/
     run: function(creep,slots,droppedEnergy,sourcesAll,pop,enemyStrctures,energyDropoffPoints,energyNeeded) {
-        var result = Game.spawns.Spawn1.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
-        if(pop < 5){
-            return roleHarvester.run(creep, slots,droppedEnergy,sourcesAll,enemyStrctures,energyDropoffPoints,energyNeeded);
+        if(typeof(creep.room.controller) == 'undefined' || creep.room.controller.owner != "keyboardkommander"){
+            return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures,energyDropoffPoints,energyNeeded);
+            
         }
+        
+        
+        var result = creep.room.createConstructionSite(creep.pos.x,creep.pos.y, STRUCTURE_ROAD);
+        
         
         timeToFullHarvest++;
         
-        if(creep.memory.upgrading && creep.carry.energy == 0) {
+        if( creep.carry.energy == 0) {
             creep.memory.upgrading = false;
 	    }
-	    if(!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
+	    if(creep.carry.energy == creep.carryCapacity) {
 	        creep.memory.upgrading = true;
 	    }
-
-	    if(creep.memory.upgrading && typeof(creep.room.controller) != 'undefined' && creep.room.controller.my) {
+        if(creep.memory.upgrading){
             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller);
             }
+            
         }
+        
         else {
             return roleHarvester.run(creep,slots,droppedEnergy,sourcesAll,enemyStrctures,energyDropoffPoints,energyNeeded);
         }

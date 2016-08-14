@@ -147,8 +147,7 @@ var spawnCreep = function(type, spawn, energy) {
 }
 
 module.exports.loop = function () {
-    Game.flags.Flag1.memory.creeps = 0;
-    
+
     var pop = 0;
     for (var i in Game.creeps) { pop++ }
     
@@ -215,89 +214,98 @@ module.exports.loop = function () {
         structures[r.name] = r.find(FIND_STRUCTURES);
         targets[r.name] = r.find(FIND_HOSTILE_CREEPS);
         enemyStructures[r.name] = r.find(FIND_HOSTILE_STRUCTURES);
-        sourcesAll[r.name] = sources;
+        var isHarvestableRoom = true;//!(r.controller && r.controller.owner && r.controller.owner != "keyboardkommander");
+            
+        if(isHarvestableRoom){
+            sourcesAll[r.name] = sources;
+        }
         energyNeeded[r.name] = [];
         energyDropoffPoints[r.name] = [];
         
-        //This needs to be moved out
-        energyDropoffPoints[r.name] = r.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_TOWER ) 
-                            && structure.energy < structure.energyCapacity;
-                }
-        });
-        
+        if(isHarvestableRoom){
+            //This needs to be moved out
+            energyDropoffPoints[r.name] = r.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_TOWER ) 
+                                && structure.energy < structure.energyCapacity && structure.owner == "keyboardkommander";
+                    }
+            });
+        }
         
         var energyDropOffPointsFound = r.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType == STRUCTURE_SPAWN) 
-                        && structure.energy < structure.energyCapacity;
+                            && structure.energy < structure.energyCapacity && structure.owner == "keyboardkommander";
             }
         });
         
-        for(var t in energyDropOffPointsFound){
-            energyDropoffPoints[r.name].push(energyDropOffPointsFound[t]);
+        if(isHarvestableRoom){
+            for(var t in energyDropOffPointsFound){
+                energyDropoffPoints[r.name].push(energyDropOffPointsFound[t]);
+            }
         }
         
         
         energyDropOffPointsFound = r.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION ) 
-                            && structure.energy < structure.energyCapacity;
+                    return (structure.structureType == STRUCTURE_EXTENSION )
+                            && structure.energy < structure.energyCapacity && structure.owner == "keyboardkommander";
                 }
         });
         
-        
-        for(var t in energyDropOffPointsFound){
-            energyDropoffPoints[r.name].push(energyDropOffPointsFound[t]);
+        if(isHarvestableRoom){
+            for(var t in energyDropOffPointsFound){
+                energyDropoffPoints[r.name].push(energyDropOffPointsFound[t]);
+            }
         }
         
         
         for (var t in energyDropoffPoints[r.name]){
             energyNeeded[r.name].push(energyDropoffPoints[r.name][t].energyCapacity - energyDropoffPoints[r.name][t].energy);
         }
-        
-        slots[r.name] = [];
-        slots[r.name][0] = 0;
-        
-        for(var source in sources)
-        {
-            slots[r.name][source] = 0;        
-            var pos = sources[source].pos;
-            
-            if(Game.map.getTerrainAt(pos.x + 1,pos.y,sources[source].room.name) != 'wall')
+    
+        if(isHarvestableRoom){
+            slots[r.name] = [];
+            slots[r.name][0] = 0;
+            for(var source in sources)
             {
-                slots[r.name][source] = slots[r.name][source] + 1;
-            }
-            
-            if(Game.map.getTerrainAt(pos.x + 1,pos.y - 1,sources[source].room.name) != 'wall')
-            {
-                slots[r.name][source] = slots[r.name][source] + 1;
-            }
-            
-            if(Game.map.getTerrainAt(pos.x + 1,pos.y + 1,sources[source].room.name) != 'wall')
-            {
-                slots[r.name][source] = slots[r.name][source] + 1;
-            }
-            
-            if(Game.map.getTerrainAt(pos.x - 1,pos.y,sources[source].room.name) != 'wall')
-            {
-                slots[r.name][source] = slots[r.name][source] + 1;
-            }
-            
-            
-            if(Game.map.getTerrainAt(pos.x - 1,pos.y + 1,sources[source].room.name) != 'wall')
-            {
-                slots[r.name][source] = slots[r.name][source] + 1;
-            }
-            
-            
-            if(Game.map.getTerrainAt(pos.x - 1,pos.y - 1,sources[source].room.name) != 'wall')
-            {
-                slots[r.name][source] = slots[r.name][source] + 1;
-            }
-            
+                slots[r.name][source] = 0;        
+                var pos = sources[source].pos;
+                
+                if(Game.map.getTerrainAt(pos.x + 1,pos.y,sources[source].room.name) != 'wall')
+                {
+                    slots[r.name][source] = slots[r.name][source] + 1;
+                }
+                
+                if(Game.map.getTerrainAt(pos.x + 1,pos.y - 1,sources[source].room.name) != 'wall')
+                {
+                    slots[r.name][source] = slots[r.name][source] + 1;
+                }
+                
+                if(Game.map.getTerrainAt(pos.x + 1,pos.y + 1,sources[source].room.name) != 'wall')
+                {
+                    slots[r.name][source] = slots[r.name][source] + 1;
+                }
+                
+                if(Game.map.getTerrainAt(pos.x - 1,pos.y,sources[source].room.name) != 'wall')
+                {
+                    slots[r.name][source] = slots[r.name][source] + 1;
+                }
+                
+                
+                if(Game.map.getTerrainAt(pos.x - 1,pos.y + 1,sources[source].room.name) != 'wall')
+                {
+                    slots[r.name][source] = slots[r.name][source] + 1;
+                }
+                
+                
+                if(Game.map.getTerrainAt(pos.x - 1,pos.y - 1,sources[source].room.name) != 'wall')
+                {
+                    slots[r.name][source] = slots[r.name][source] + 1;
+                }
+            }        
         }
+        
     }
     
     
