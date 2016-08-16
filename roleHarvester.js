@@ -84,7 +84,7 @@ module.exports = {
     },
     
     ChooseExploreIndex: function(creep, gameInfoManager){
-        
+        //TODO: score exits based off of gold yield
     },
     
     PickupDroppedEnergy: function(creep, gameInfoManager){

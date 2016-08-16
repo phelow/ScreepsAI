@@ -37,11 +37,21 @@ module.exports = {
                 this.World[room.name].sources = new Set([]);
             }
             
+            this.World[room.name].roomExits = room.find(FIND_EXIT);
+            
             this.World[room.name].contructionSites = room.find(FIND_CONSTRUCTION_SITES,{filter: (site) => {return (site.my)}});
             this.World[room.name].droppedEnergy = room.find(FIND_DROPPED_RESOURCES);
             this.World[room.name].myStructures = room.find(FIND_STRUCTURES,{filter: (structure) => {return (structure.my)}});
             this.World[room.name].hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
             this.World[room.name].hostileStructures = room.find(FIND_HOSTILE_STRUCTURES);
+            
+            if(typeof(room.controller) != 'undefined' && room.controller.my){
+                this.World[room.name].upgradeableController = room.controller;
+            }
+            else{
+                this.World[room.name].upgradeableController = null;
+            }
+            
             this.World[room.name].returnStructures = room.find(FIND_STRUCTURES, {
                 filter: (structure) => { 
                     return structure.energy < structure.energyCapacity && structure.my && (structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION);
@@ -72,19 +82,40 @@ module.exports = {
             }
             
             this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] = this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] - 1;
-            
-            console.log(this.World[creep.memory.harvestRoom].harvestSlots);
         }
         
     },
     
+    ChooseAClass: function(){
+        var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand());
+        
+        if(choice == this.UpgraderDemand()){
+            return "upgrader";
+        }
+        else{
+            return "harvester";
+        }
+    },
+    
+    UpgraderDemand: function(){
+        return this.numUpgraders * .2;
+    },
+    
+    HarvesterDemand: function(){
+        return this.numHarvesters * .02;
+    },
+    
     TallyPopulation: function(){
         this.numHarvesters = 0;
+        this.numUpgraders = 0;
         for(var i in Game.creeps){
             var creep = Game.creeps[i];
             
             if(creep.memory.role == "harvester"){
                 this.numHarvesters++;
+            }
+            else if(creep.memory.role == "upgrader"){
+                this.numUpgraders++;
             }
         }    
     },

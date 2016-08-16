@@ -1,6 +1,7 @@
 //Imports
 var gameInfoManager = require("GameInfoManager");
 var roleHarvester = require("roleHarvester");
+var roleUpgrader = require("roleUpgrader");
 var spawnManager = require("SpawnManager");
 //-----
 
@@ -16,6 +17,9 @@ module.exports.loop = function () {
         
         if(creep.memory.role == "harvester"){
             roleHarvester.run(creep,gameInfoManager);
+        }
+        else if(creep.memory.role == "upgrader"){
+            roleUpgrader.run(creep,gameInfoManager);
         }
     }
     

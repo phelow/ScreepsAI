@@ -11,38 +11,29 @@ module.exports = {
     SpawnACreep: function(energy, spawn, type){
         var abilitiesArray = [MOVE, CARRY, WORK];
         energy -= 200;
+        var workEnergy = 2*energy/6;
+        var carryEnergy = 2*energy/6;
+        var moveEnergy = 2 *energy/6;
         
-        if(type == 'harvester')
-        {
-            var workEnergy = 2*energy/6;
-            var carryEnergy = 2*energy/6;
-            var moveEnergy = 2 *energy/6;
-            
-            while(moveEnergy >= 50){
-                abilitiesArray.push(MOVE);
-                moveEnergy = moveEnergy - 50;
-            }
-            
-            workEnergy = workEnergy + moveEnergy;
-            while(workEnergy >= 100){
-                abilitiesArray.push(WORK);
-                workEnergy = workEnergy - 100;
-            }
-            
-            carryEnergy = carryEnergy + workEnergy;
-            while(carryEnergy >= 50){
-                abilitiesArray.push(CARRY);
-                carryEnergy = carryEnergy - 50;
-            }
+        while(moveEnergy >= 50){
+            abilitiesArray.push(MOVE);
+            moveEnergy = moveEnergy - 50;
+        }
+        
+        workEnergy = workEnergy + moveEnergy;
+        while(workEnergy >= 100){
+            abilitiesArray.push(WORK);
+            workEnergy = workEnergy - 100;
+        }
+        
+        carryEnergy = carryEnergy + workEnergy;
+        while(carryEnergy >= 50){
+            abilitiesArray.push(CARRY);
+            carryEnergy = carryEnergy - 50;
         }
         
         spawn.createCreep(abilitiesArray, undefined, {role: type});
         
-    },
-    
-    ChooseAClass: function(gameInfoManager){
-        //TODO: choose a class based on what we need
-        return "harvester";
     },
     
     SpawnCreeps: function(gameInfoManager)
@@ -54,7 +45,7 @@ module.exports = {
             var energyAvailable = spawn.room.energyAvailable;
             
             if(energyAvailable == maxEnergy){
-                this.SpawnACreep(energyAvailable,spawn, this.ChooseAClass(gameInfoManager));
+                this.SpawnACreep(energyAvailable,spawn, gameInfoManager.ChooseAClass());
             }
         }
     }
