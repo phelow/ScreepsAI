@@ -1,12 +1,14 @@
 //Imports
 var gameInfoManager = require("GameInfoManager");
 var roleHarvester = require("roleHarvester");
+var spawnManager = require("SpawnManager");
 //-----
 
 module.exports.loop = function () {
     //read our environmental information
     //take our tally of population
     gameInfoManager.CacheEnvironment();
+    spawnManager.SpawnCreeps(gameInfoManager);
     
     //run the creeps
     for(var creepIndex in Game.creeps){

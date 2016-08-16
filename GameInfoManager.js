@@ -13,12 +13,16 @@ module.exports = {
     GatherRooms: function(){
         this.World = [];
         this.roomsCache = []
-        this.roomsCache.push(Game.spawns.Spawn1.room);
-        for(var creepIndex in Game.creeps){
-            var creep = Game.creeps[creepIndex];
-            this.roomsCache.push(Game.rooms[creep.memory.roomName])
+        
+        for(var spawnIndex in Game.spawns){
+            this.roomsCache.push(Game.spawns[spawnIndex].room);
         }
         
+        for(var creepIndex in Game.creeps){
+            var creep = Game.creeps[creepIndex];
+            this.roomsCache.push(Game.rooms[creep.room.name])
+        }
+
         this.roomsCache = new Set(this.roomsCache);
         
         for(let room of this.roomsCache){
@@ -26,7 +30,7 @@ module.exports = {
             this.World[room.name].room = room;
             
             if(typeof(room.controller) == 'undefined' || room.controller.owner.username == 'keyboardkommander'){
-                this.World[room.name].sources = new Set(room.find(FIND_SOURCES));
+                this.World[room.name].sources = room.find(FIND_SOURCES);
             }
             else
             {
@@ -44,12 +48,13 @@ module.exports = {
                 }
             });
             
-            this.World[room.name].harvestSlots = []
+            this.World[room.name].harvestSlots = [];
+            
             //Assemble the slots
-            for(let source of this.World[room.name].sources){
+            for(var source of this.World[room.name].sources){
                 var numSlots = 0;
                 
-                for(var x = -1; x <= 1;x++){
+                for(var x = -1; x <= 1; x++){
                     for(var y = -1; y <= 1; y++){
                         if(Game.map.getTerrainAt(source.pos.x + x, source.pos.y + y, room.name) != 'wall'){
                             numSlots++;
@@ -57,9 +62,18 @@ module.exports = {
                     }
                 }
                 
-                this.World[room.name].harvestSlots[source.name] = numSlots;
-                console.log(numSlots);
+                this.World[room.name].harvestSlots.push(numSlots);
             }
+        }
+        
+        for(var creepIndex in Game.creeps){
+            var creep = Game.creeps[creepIndex];
+            if(creep.memory.harvestRoom == 'undefined' || typeof(creep.memory.harvestRoom) == 'undefined' || creep.memory.harvestRoom == 0){
+                continue;
+            }
+            
+            this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] = this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] - 1;
+            console.log(this.World[creep.memory.harvestRoom].harvestSlots);
         }
         
     },
