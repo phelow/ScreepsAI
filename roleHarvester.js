@@ -33,14 +33,14 @@ module.exports = {
             for(var harvestingIndex in gameInfoManager.World[roomName].sources)
             {
                 var thisRange = creep.pos.getRangeTo(gameInfoManager.World[roomName].sources[harvestingIndex]);
-                if(creep.memory.harvestSource == 0){
+                if(creep.memory.harvestSource == 0 && gameInfoManager.World[roomName].harvestSlots[harvestingIndex] > 0){
                     creep.memory.harvestSource = harvestingIndex;
                     creep.memory.harvestRoom = roomName;
                     closestRange = thisRange;
                     continue;
                 }
-                console.log("attempting to harvest: " + gameInfoManager.World[roomName].harvestSlots[harvestingIndex]);
                 if(thisRange < closestRange && gameInfoManager.World[roomName].harvestSlots[harvestingIndex] > 0){
+                    gameInfoManager.World[roomName].harvestSlots[harvestingIndex]--;
                     closestRange = thisRange;
                     creep.memory.harvestRoom = roomName;
                     creep.memory.harvestSource = harvestingIndex;

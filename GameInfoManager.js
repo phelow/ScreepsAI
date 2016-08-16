@@ -61,7 +61,6 @@ module.exports = {
                         }
                     }
                 }
-                
                 this.World[room.name].harvestSlots.push(numSlots);
             }
         }
@@ -73,6 +72,7 @@ module.exports = {
             }
             
             this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] = this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] - 1;
+            
             console.log(this.World[creep.memory.harvestRoom].harvestSlots);
         }
         
