@@ -30,6 +30,8 @@ module.exports = {
     },
     
     run: function(creep, gameInfoManager){
+        roleHarvester.ChangeHarvestState(creep);
+        
         if(creep.memory.harvesting){
             roleHarvester.run(creep,gameInfoManager);
             return;
@@ -39,8 +41,8 @@ module.exports = {
             this.PickController(creep,gameInfoManager);
         }
         
-        if(creep.upgradeController(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController) == -9){
-            creep.moveTo(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController);
-        }
+        console.log(creep.upgradeController(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController));
+        console.log(creep.moveTo(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController));
+        
     }
 };
