@@ -89,17 +89,17 @@ module.exports = {
     ChooseAClass: function(){
         var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand(), this.BuilderDemand(), this.FootmanDemand());
         
-        if(choice == this.UpgraderDemand()){
+        if(choice == this.HarvesterDemand()){
             return "upgrader";
         }
         else if (choice == this.BuilderDemand()){
             return "builder";
         }
-        else if (choice == this.BuilderDemand()){
+        else if (choice == this.FootmanDemand()){
             return "footman";
         }
         else{
-            return "harvester";
+            return "upgrader";
         }
     },
     
@@ -111,10 +111,10 @@ module.exports = {
         return this.numHarvesters * .02;
     },
     BuilderDemand: function(){
-        return this.numHarvesters * .3;
+        return this.numBuilders * .3;
     },
     FootmanDemand: function(){
-        return this.numHarvesters * .02;
+        return this.numFootmen * .02;
     },
     
     TallyPopulation: function(){
