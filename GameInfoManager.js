@@ -87,10 +87,16 @@ module.exports = {
     },
     
     ChooseAClass: function(){
-        var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand());
+        var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand(), this.BuilderDemand(), this.FootmanDemand());
         
         if(choice == this.UpgraderDemand()){
             return "upgrader";
+        }
+        else if (choice == this.BuilderDemand()){
+            return "builder";
+        }
+        else if (choice == this.BuilderDemand()){
+            return "footman";
         }
         else{
             return "harvester";
@@ -104,10 +110,18 @@ module.exports = {
     HarvesterDemand: function(){
         return this.numHarvesters * .02;
     },
+    BuilderDemand: function(){
+        return this.numHarvesters * .3;
+    },
+    FootmanDemand: function(){
+        return this.numHarvesters * .02;
+    },
     
     TallyPopulation: function(){
         this.numHarvesters = 0;
         this.numUpgraders = 0;
+        this.numFootmen = 0;
+        this.numBuilders = 0;
         for(var i in Game.creeps){
             var creep = Game.creeps[i];
             
@@ -116,6 +130,12 @@ module.exports = {
             }
             else if(creep.memory.role == "upgrader"){
                 this.numUpgraders++;
+            }
+            else if(creep.memory.role == "builder"){
+                this.numFootmen++;
+            }
+            else if(creep.memory.role == "footmen"){
+                this.numBuilders++;
             }
         }    
     },

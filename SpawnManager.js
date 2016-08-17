@@ -14,6 +14,17 @@ module.exports = {
         var workEnergy = 2*energy/6;
         var carryEnergy = 2*energy/6;
         var moveEnergy = 2 *energy/6;
+        var attackEnergy = 0;
+        
+        if(type == "footman"){
+            attackEnergy = workEnergy/2;
+        }
+        
+        while(attackEnergy >= 80){
+            abilitiesArray.push(ATTACK);
+            attackEnergy -= 80;
+        }
+        
         
         while(moveEnergy >= 50){
             abilitiesArray.push(MOVE);

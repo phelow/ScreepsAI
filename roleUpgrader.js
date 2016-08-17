@@ -41,8 +41,9 @@ module.exports = {
             this.PickController(creep,gameInfoManager);
         }
         
-        console.log(creep.upgradeController(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController));
-        console.log(creep.moveTo(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController));
+        if(creep.upgradeController(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController) != 0){
+            creep.moveTo(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController);
+        }
         
     }
 };

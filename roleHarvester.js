@@ -85,6 +85,7 @@ module.exports = {
     
     ChooseExploreIndex: function(creep, gameInfoManager){
         //TODO: score exits based off of gold yield
+        creep.memory.exploreIndex = Math.random() * creep.room.find(FIND_EXIT).length; //TODO: lump this in game info
     },
     
     PickupDroppedEnergy: function(creep, gameInfoManager){
@@ -124,8 +125,8 @@ module.exports = {
         creep.harvest(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]);
     },
     
-    Explore: function(gameInfoManager){
-        
+    Explore: function(creep, gameInfoManager){
+        creep.moveTo(creep.room.find(FIND_EXIT)[creep.memory.exploreIndex]);
     },
     
     run: function(creep,gameInfoManager){
@@ -150,11 +151,13 @@ module.exports = {
             
             if(this.exploring)
             {
-                if(typeof(creep.memory.exploreIndex) == 'undefined'){
-                    this.ChooseExploreIndex();
-                }
                 
-                this.Explore();
+                if(typeof(creep.memory.exploreIndex) == 'undefined' || creep.memory.room != creep.room){
+                    this.ChooseExploreIndex(creep, gameInfoManager);
+                }
+                creep.memory.room = creep.room;
+                
+                this.Explore(creep, gameInfoManager);
             }
             else{
                 this.Harvest(creep, gameInfoManager);
