@@ -3,6 +3,7 @@ var gameInfoManager = require("GameInfoManager");
 var constructionManager = require("ConstructionManager");
 var roleHarvester = require("roleHarvester");
 var roleUpgrader = require("roleUpgrader");
+var roleBuilder = require("roleBuilder");
 var spawnManager = require("SpawnManager");
 //-----
 
@@ -24,10 +25,10 @@ module.exports.loop = function () {
             roleUpgrader.run(creep,gameInfoManager);
         }
         else if(creep.memory.role == "builder"){
-            roleUpgrader.run(creep,gameInfoManager);
+            roleBuilder.run(creep,gameInfoManager);
         }
         else if(creep.memory.role == "footman"){
-            roleUpgrader.run(creep,gameInfoManager);
+            roleFootman.run(creep,gameInfoManager);
         }
     }
     

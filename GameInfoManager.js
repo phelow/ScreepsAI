@@ -39,7 +39,7 @@ module.exports = {
             
             this.World[room.name].roomExits = room.find(FIND_EXIT);
             
-            this.World[room.name].contructionSites = room.find(FIND_CONSTRUCTION_SITES,{filter: (site) => {return (site.my)}});
+            this.World[room.name].constructionSites = room.find(FIND_CONSTRUCTION_SITES,{filter: (site) => {return (site.my)}});
             this.World[room.name].droppedEnergy = room.find(FIND_DROPPED_RESOURCES);
             this.World[room.name].myStructures = room.find(FIND_STRUCTURES,{filter: (structure) => {return (structure.my)}});
             this.World[room.name].hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
@@ -77,7 +77,7 @@ module.exports = {
         
         for(var creepIndex in Game.creeps){
             var creep = Game.creeps[creepIndex];
-            if(creep.memory.harvestRoom == 'undefined' || typeof(creep.memory.harvestRoom) == 'undefined' || creep.memory.harvestRoom == 0){
+            if(creep.memory.harvestRoom == 'undefined' || typeof(creep.memory.harvestRoom) == 'undefined' || creep.memory.harvestRoom == 0 || creep.memory.harvesting == false){
                 continue;
             }
             
@@ -90,7 +90,7 @@ module.exports = {
         var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand(), this.BuilderDemand(), this.FootmanDemand());
         
         if(choice == this.HarvesterDemand()){
-            return "upgrader";
+            return "harvester";
         }
         else if (choice == this.BuilderDemand()){
             return "builder";
@@ -132,10 +132,10 @@ module.exports = {
                 this.numUpgraders++;
             }
             else if(creep.memory.role == "builder"){
-                this.numFootmen++;
-            }
-            else if(creep.memory.role == "footmen"){
                 this.numBuilders++;
+            }
+            else if(creep.memory.role == "footman"){
+                this.numFootmen++;
             }
         }    
     },

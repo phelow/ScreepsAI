@@ -36,7 +36,6 @@ module.exports = {
             roleHarvester.run(creep,gameInfoManager);
             return;
         }
-        console.log(typeof(creep.memory.controllerRoom) + " " + creep.memory.controllerRoom)
         if(typeof(creep.memory.controllerRoom) == 'undefined'){
             this.PickController(creep,gameInfoManager);
         }
