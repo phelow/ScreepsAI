@@ -20,10 +20,12 @@ module.exports = {
         else if (totalCarry == creep.carryCapacity)
         {
             creep.memory.harvesting = false;
+            creep.memory.harvestRoom = 0;
         }
     },
     
     ChooseHarvestIndex: function(creep, gameInfoManager){
+        this.exploring = false;
         //TODO: pick the closest harvest index with available slots
         creep.memory.harvestRoom = 0;
         creep.memory.harvestSource = 0;
@@ -34,6 +36,7 @@ module.exports = {
             {
                 var thisRange = creep.pos.getRangeTo(gameInfoManager.World[roomName].sources[harvestingIndex]);
                 if(creep.memory.harvestRoom == 0 && gameInfoManager.World[roomName].harvestSlots[harvestingIndex] > 0){
+                    gameInfoManager.World[roomName].harvestSlots[harvestingIndex]--;
                     creep.memory.harvestSource = harvestingIndex;
                     creep.memory.harvestRoom = roomName;
                     closestRange = thisRange;
@@ -85,7 +88,7 @@ module.exports = {
     
     ChooseExploreIndex: function(creep, gameInfoManager){
         //TODO: score exits based off of gold yield
-        creep.memory.exploreIndex = Math.random() * creep.room.find(FIND_EXIT).length; //TODO: lump this in game info
+        creep.memory.exploreIndex = Math.floor(Math.random() * gameInfoManager.World[creep.room.name].exits.length); //TODO: lump this in game info
     },
     
     PickupDroppedEnergy: function(creep, gameInfoManager){
@@ -120,13 +123,20 @@ module.exports = {
     },
     
     Harvest: function(creep, gameInfoManager){
-        gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource];
-        creep.moveTo(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]);
-        creep.harvest(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]);
+        creep.say("h:" + creep.memory.harvestRoom);
+        try{
+            creep.moveTo(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]);
+            creep.harvest(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]);
+        }
+        catch(err){
+            
+        }
+        
     },
     
     Explore: function(creep, gameInfoManager){
-        creep.moveTo(creep.room.find(FIND_EXIT)[creep.memory.exploreIndex]);
+        creep.say(creep.memory.exploreIndex);
+        creep.moveTo(gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex]);
     },
     
     run: function(creep,gameInfoManager){
@@ -137,7 +147,7 @@ module.exports = {
         if(!creep.memory.harvesting){
             this.ReturnEnergy(creep, gameInfoManager);
         }
-        if(creep.memory.harvesting){
+        else{
             //harvest
             //if there is dropped energy pick it up
             if(gameInfoManager.World[creep.room.name].droppedEnergy.length > 0){
@@ -151,12 +161,11 @@ module.exports = {
             
             if(this.exploring)
             {
-                
-                if(typeof(creep.memory.exploreIndex) == 'undefined' || creep.memory.room != creep.room){
+                if(typeof(creep.memory.exploreIndex) == 'undefined' || creep.memory.room != creep.room.name){
                     this.ChooseExploreIndex(creep, gameInfoManager);
                 }
-                creep.memory.room = creep.room;
                 
+                creep.memory.room = creep.room.name;
                 this.Explore(creep, gameInfoManager);
             }
             else{

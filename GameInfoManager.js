@@ -20,7 +20,7 @@ module.exports = {
         
         for(var creepIndex in Game.creeps){
             var creep = Game.creeps[creepIndex];
-            this.roomsCache.push(Game.rooms[creep.room.name])
+            this.roomsCache.push(Game.rooms[creep.room.name]);
         }
 
         this.roomsCache = new Set(this.roomsCache);
@@ -29,7 +29,7 @@ module.exports = {
             this.World[room.name] = {};
             this.World[room.name].room = room;
             
-            if(typeof(room.controller) == 'undefined' || room.controller.owner.username == 'keyboardkommander'){
+            if(typeof(room.controller) == 'undefined' ||typeof(room.controller.owner) == 'undefined' || room.controller.my){
                 this.World[room.name].sources = room.find(FIND_SOURCES);
             }
             else
@@ -44,6 +44,7 @@ module.exports = {
             this.World[room.name].myStructures = room.find(FIND_STRUCTURES,{filter: (structure) => {return (structure.my)}});
             this.World[room.name].hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
             this.World[room.name].hostileStructures = room.find(FIND_HOSTILE_STRUCTURES);
+            this.World[room.name].exits = room.find(FIND_EXIT);
             
             if(typeof(room.controller) != 'undefined' && room.controller.my){
                 this.World[room.name].upgradeableController = room.controller;
@@ -80,8 +81,9 @@ module.exports = {
             if(creep.memory.harvestRoom == 'undefined' || typeof(creep.memory.harvestRoom) == 'undefined' || creep.memory.harvestRoom == 0 || creep.memory.harvesting == false){
                 continue;
             }
-            
-            this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] = this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] - 1;
+            if(typeof(this.World[creep.memory.harvestRoom]) != 'undefined'){
+                this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] = this.World[creep.memory.harvestRoom].harvestSlots[creep.memory.harvestSource] - 1;
+            }
         }
         
     },

@@ -13,9 +13,7 @@ module.exports = {
         //pick the nearest controller
         var closestRange = 99999;
         for(var roomName in gameInfoManager.World){
-            console.log(gameInfoManager.World[roomName].constructionSites);
             for(var constructionSite in gameInfoManager.World[roomName].constructionSites){
-                console.log(constructionSite);
                 if(typeof(creep.memory.controller) == 'undefined'){
                     creep.memory.buildRoom = roomName;
                     creep.memory.buildSite = constructionSite;

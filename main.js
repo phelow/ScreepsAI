@@ -4,12 +4,14 @@ var constructionManager = require("ConstructionManager");
 var roleHarvester = require("roleHarvester");
 var roleUpgrader = require("roleUpgrader");
 var roleBuilder = require("roleBuilder");
+var roleFootman = require("roleFootman");
 var spawnManager = require("SpawnManager");
 //-----
 
 module.exports.loop = function () {
     //read our environmental information
     //take our tally of population
+    
     gameInfoManager.CacheEnvironment();
     spawnManager.SpawnCreeps(gameInfoManager);
     constructionManager.BuildSites(gameInfoManager);
