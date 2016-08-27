@@ -10,39 +10,19 @@
 var roleHarvester = require("roleHarvester");
 
 module.exports = {
-    PickController: function(creep, gameInfoManager){
-        //pick the nearest controller
-        var closestRange = 99999;
-        for(var roomName in gameInfoManager.World){
-            
-            
-            if(typeof(creep.memory.controller) == 'undefined'){
-                creep.memory.controllerRoom = roomName;
-            }
-            console.log(gameInfoManager.World[roomName].upgradeableController);
-            var curRange = creep.pos.getRangeTo(gameInfoManager.World[roomName].upgradeableController.pos);
-            
-            if(curRange < closestRange){
-                closestRange = curRange;
-                creep.memory.controllerRoom = roomName;
-            }
-        }
-    },
-    
     run: function(creep, gameInfoManager){
         roleHarvester.ChangeHarvestState(creep);
         
-        if(creep.memory.harvesting){
+        if(creep.memory.harvesting 
+        || typeof(creep.room.controller) == 'undefined' 
+        || !creep.room.controller.my ){
             roleHarvester.run(creep,gameInfoManager);
             return;
         }
-        if(typeof(creep.memory.controllerRoom) == 'undefined'){
-            this.PickController(creep,gameInfoManager);
-        }
         
-        if(creep.upgradeController(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController) != 0){
-            creep.moveTo(gameInfoManager.World[creep.memory.controllerRoom].upgradeableController);
+        if(creep.upgradeController(creep.room.controller) != 0){
+            creep.moveTo(creep.room.controller);
+            return;
         }
-        
     }
 };

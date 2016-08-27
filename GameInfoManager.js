@@ -1,4 +1,8 @@
+//TODO: replace slots with a "time to availability" object This will be a summation of the pathRange + carryCapacity/harvest rate of each creep mining a source.
+//Then when iterating over the harvesters match a harvester and his distance with the time to availability and his "buddies" name. When his buddy leaves replace
+//his time to availability with the avialability of the new creep. Keep track of which miner's have buddies with a boolean array of "has buddy".
 
+//TODO: on each harvester store a distance value for the currently assigned carrier, only pick a carrier if it's closer than that distance
 module.exports = {
     TallyTotals: function(){
         this.TallyPopulation();
@@ -6,31 +10,21 @@ module.exports = {
     
     CacheEnvironment: function(){
         this.TallyTotals();
-        
         this.GatherRooms();
     },
     
     GatherRooms: function(){
         this.World = [];
-        this.roomsCache = []
+        this.MaxEnergy = false;
+        this.TotalSlots = 0;
         
-        for(var spawnIndex in Game.spawns){
-            this.roomsCache.push(Game.spawns[spawnIndex].room);
-        }
-        
-        for(var creepIndex in Game.creeps){
-            var creep = Game.creeps[creepIndex];
-            this.roomsCache.push(Game.rooms[creep.room.name]);
-        }
-
-        this.roomsCache = new Set(this.roomsCache);
-        
-        for(let room of this.roomsCache){
+        for(var roomIndex in Game.rooms){
+            var room = Game.rooms[roomIndex];
             this.World[room.name] = {};
             this.World[room.name].room = room;
             
             if(typeof(room.controller) == 'undefined' ||typeof(room.controller.owner) == 'undefined' || room.controller.my){
-                this.World[room.name].sources = room.find(FIND_SOURCES);
+                this.World[room.name].sources = room.find(FIND_SOURCES, {filter: (source) => {return (source.energy > 0)}});
             }
             else
             {
@@ -41,10 +35,26 @@ module.exports = {
             
             this.World[room.name].constructionSites = room.find(FIND_CONSTRUCTION_SITES,{filter: (site) => {return (site.my)}});
             this.World[room.name].droppedEnergy = room.find(FIND_DROPPED_RESOURCES);
-            this.World[room.name].myStructures = room.find(FIND_STRUCTURES,{filter: (structure) => {return (structure.my)}});
+            this.World[room.name].myStructures = room.find(FIND_STRUCTURES,{
+                filter: (structure) => {return (structure.my)}});
+            this.World[room.name].myDamagedStructures = room.find(FIND_STRUCTURES,{
+                filter: (structure) => {return (structure.my || structure.structureType == STRUCTURE_ROAD) && structure.hits < structure.hitsMax}});
+            this.World[room.name].hostileStructures = 
+                room.find(FIND_STRUCTURES,
+                {filter: (structure) => {
+                return (!structure.my && 
+                structure.structureType != STRUCTURE_ROAD &&
+                structure.structureType != STRUCTURE_KEEPER_LAIR &&
+                typeof(structure.owner) != 'undefined' &&
+                structure.structureType != STRUCTURE_CONTROLLER)}});
+                
+            this.World[room.name].sourceKeepers = 
+                room.find(FIND_STRUCTURES,
+                {filter: (structure) => {
+                return structure.structureType == STRUCTURE_KEEPER_LAIR}});
             this.World[room.name].hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
-            this.World[room.name].hostileStructures = room.find(FIND_HOSTILE_STRUCTURES);
             this.World[room.name].exits = room.find(FIND_EXIT);
+            this.World[room.name].myTowers = room.find(STRUCTURE_TOWER, {filter: (structure) => {return (structure.my)}});
             
             if(typeof(room.controller) != 'undefined' && room.controller.my){
                 this.World[room.name].upgradeableController = room.controller;
@@ -69,6 +79,7 @@ module.exports = {
                     for(var y = -1; y <= 1; y++){
                         if(Game.map.getTerrainAt(source.pos.x + x, source.pos.y + y, room.name) != 'wall'){
                             numSlots++;
+                            this.TotalSlots++;
                         }
                     }
                 }
@@ -86,10 +97,16 @@ module.exports = {
             }
         }
         
+        for(var s in Game.spawns){
+            if(Game.spawns[s].energy == Game.spawns[s].energyCapacity){
+                this.MaxEnergy = true;
+            }
+        }
     },
     
     ChooseAClass: function(){
-        var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand(), this.BuilderDemand(), this.FootmanDemand());
+        var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand(),
+        this.BuilderDemand(), this.FootmanDemand(), this.ArcherDemand(), this.CarrierDemand());
         
         if(choice == this.HarvesterDemand()){
             return "harvester";
@@ -97,33 +114,48 @@ module.exports = {
         else if (choice == this.BuilderDemand()){
             return "builder";
         }
+        else if (choice == this.UpgraderDemand()){
+            return "upgrader";
+        } else if (choice == this.ArcherDemand()){
+            return "archer"
+        }
         else if (choice == this.FootmanDemand()){
             return "footman";
+        }else if(choice == this.CarrierDemand()){
+            return "carrier";
         }
-        else{
-            return "upgrader";
-        }
+    },
+    
+    ArcherDemand: function(){
+        return this.numArchers * 24;
     },
     
     UpgraderDemand: function(){
-        return this.numUpgraders * .2;
+        return this.numUpgraders * 12;
     },
     
     HarvesterDemand: function(){
-        return this.numHarvesters * .02;
+        return this.numHarvesters * 6;
     },
     BuilderDemand: function(){
-        return this.numBuilders * .3;
+        return this.numBuilders * 18;
     },
     FootmanDemand: function(){
-        return this.numFootmen * .02;
+        return this.numFootmen * 24;
     },
+    CarrierDemand: function(){
+        return 24 + this.numCarriers * 24 - this.numHarvesters*12;
+    },
+    
     
     TallyPopulation: function(){
         this.numHarvesters = 0;
         this.numUpgraders = 0;
         this.numFootmen = 0;
         this.numBuilders = 0;
+        this.numArchers = 0;
+        this.numCarriers = 0;
+        
         for(var i in Game.creeps){
             var creep = Game.creeps[i];
             
@@ -138,6 +170,10 @@ module.exports = {
             }
             else if(creep.memory.role == "footman"){
                 this.numFootmen++;
+            } else if(creep.memory.role == "archer"){
+                this.numArchers++;
+            } else if(creep.memory.role == "carrier"){
+                this.numCarriers++;
             }
         }    
     },
