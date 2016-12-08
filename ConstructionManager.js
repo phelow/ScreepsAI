@@ -18,9 +18,9 @@ module.exports = {
                 
                 if(dist >=3 && dist <= 10){
                     gameInfoManager.World[room].room.createConstructionSite(
-                        spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_TOWER);
+                        spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_SPAWN);
                     gameInfoManager.World[room].room.createConstructionSite(
-                        spawnPos.x + xOffset ,spawnPos.y + yOffset, STRUCTURE_SPAWN);
+                        spawnPos.x + xOffset, spawnPos.y + yOffset, STRUCTURE_TOWER);
                     gameInfoManager.World[room].room.createConstructionSite(
                         spawnPos.x + xOffset ,spawnPos.y + yOffset, STRUCTURE_EXTENSION);
                 }

@@ -13,7 +13,7 @@ module.exports = {
     
     findNearestTargetCreep: function(creep, gameInfoManager){
         var closestRange = Infinity;
-        this.killRoom  = 0;
+        this.killCreepRoom  = -1;
         
         for(var roomName in gameInfoManager.World){
             for(var constructionSite in gameInfoManager.World[roomName].hostileCreeps){
@@ -21,8 +21,8 @@ module.exports = {
                 if(curRange <= closestRange && !(gameInfoManager.World[roomName].hostileCreeps[constructionSite].hitsMax > creep.hitsMax * 5 
                 && gameInfoManager.World[roomName].hostileCreeps[constructionSite].hitsMax == 5000)){
                     closestRange = curRange;
-                    this.killRoom = roomName;
-                    this.killSite = constructionSite;
+                    this.killCreepRoom = roomName;
+                    this.killCreepSite = constructionSite;
                 }
             }
         }
@@ -30,8 +30,8 @@ module.exports = {
     
     
     findNearestTargetStructure: function(creep, gameInfoManager){
+        this.killRoom = -1;
         var closestRange = Infinity;
-        this.killRoom  = 0;
         var roomName = creep.room.name;
         for(var constructionSite in gameInfoManager.World[roomName].hostileStructures){
             var curRange = creep.pos.getRangeTo(gameInfoManager.World[roomName].hostileStructures[constructionSite].pos);
@@ -47,23 +47,28 @@ module.exports = {
     
     run: function(creep, gameInfoManager){
         this.findNearestTargetCreep(creep, gameInfoManager);
+        this.findNearestTargetStructure(creep,gameInfoManager);
         
-        if(this.killRoom !=0 &&
-        roleHarvester.GetDistanceTo(creep,gameInfoManager.World[
-            this.killRoom].hostileCreeps[this.killSite]) < 1 + creep.pos.getRangeTo(gameInfoManager.World[this.killRoom].hostileCreeps[this.killSite])){ //TODO: see if this works when you're next to a unit
-			creep.moveTo(gameInfoManager.World[this.killRoom].hostileCreeps[this.killSite])
-			creep.attack(gameInfoManager.World[this.killRoom].hostileCreeps[this.killSite]);
-        }
-        else if(this.findNearestTargetStructure(creep,gameInfoManager) == true){
-			creep.moveTo(gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
-			creep.attack(gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
-        }
-        else{
+        if((this.killRoom == -1 && this.killCreepRoom == -1) || (typeof(gameInfoManager.World[this.killCreepRoom]) == 'undefined' && typeof(gameInfoManager.World[this.killRoom]) == 'undefined')){
+            
             if(creep.carryCapacity == 0){ 
                 roleHarvester.Explore(creep,gameInfoManager);
                 return;
             }
-            roleHarvester.run(creep,gameInfoManager);        
+            roleHarvester.run(creep,gameInfoManager);    
+            return;
+        }
+        
+        
+        if(typeof(gameInfoManager.World[this.killCreepRoom]) != 'undefined'){ //TODO: see if this works when you're next to a unit
+			creep.say("C");
+			creep.moveTo(gameInfoManager.World[this.killCreepRoom].hostileCreeps[this.killCreepSite])
+			creep.attack(gameInfoManager.World[this.killCreepRoom].hostileCreeps[this.killCreepSite]);
+        }
+        else{
+            creep.say("S");
+			creep.moveTo(gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
+			creep.attack(gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
         }
     }
 };

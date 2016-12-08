@@ -17,6 +17,7 @@ module.exports = {
         this.World = [];
         this.MaxEnergy = false;
         this.TotalSlots = 0;
+        this.GlobalControl = 0;
         
         for(var roomIndex in Game.rooms){
             var room = Game.rooms[roomIndex];
@@ -58,6 +59,9 @@ module.exports = {
             
             if(typeof(room.controller) != 'undefined' && room.controller.my){
                 this.World[room.name].upgradeableController = room.controller;
+                if(this.GlobalControl < room.controller.level){
+                    this.GlobalControl = room.controller.level;
+                }
             }
             else{
                 this.World[room.name].upgradeableController = null;
@@ -104,9 +108,9 @@ module.exports = {
         }
     },
     
-    ChooseAClass: function(){
+    ChooseAClass: function(energy){
         var choice = Math.min(this.UpgraderDemand(), this.HarvesterDemand(),
-        this.BuilderDemand(), this.FootmanDemand(), this.ArcherDemand(), this.CarrierDemand());
+        this.BuilderDemand(), this.FootmanDemand(), this.ArcherDemand(), this.CarrierDemand(energy));
         
         if(choice == this.HarvesterDemand()){
             return "harvester";
@@ -123,11 +127,13 @@ module.exports = {
             return "footman";
         }else if(choice == this.CarrierDemand()){
             return "carrier";
+        }else if (choice == this.ClaimerDemand(energy)){
+            return "claimer";
         }
     },
     
     ArcherDemand: function(){
-        return this.numArchers * 24;
+        return this.numArchers * 48;
     },
     
     UpgraderDemand: function(){
@@ -141,10 +147,19 @@ module.exports = {
         return this.numBuilders * 18;
     },
     FootmanDemand: function(){
-        return this.numFootmen * 24;
+        return this.numFootmen * 48;
     },
     CarrierDemand: function(){
-        return 24 + this.numCarriers * 24 - this.numHarvesters*12;
+        return 24 + this.numCarriers * 36 - this.numHarvesters*12;
+    },
+    
+    ClaimerDemand: function(energy){
+        if(this.GlobalControl >= 7 || energy < 650){
+            return 99999;
+        }
+        else{
+            return 99999 * this.numClaimers;
+        }
     },
     
     
@@ -155,6 +170,7 @@ module.exports = {
         this.numBuilders = 0;
         this.numArchers = 0;
         this.numCarriers = 0;
+        this.numClaimers = 0;
         
         for(var i in Game.creeps){
             var creep = Game.creeps[i];
@@ -174,6 +190,8 @@ module.exports = {
                 this.numArchers++;
             } else if(creep.memory.role == "carrier"){
                 this.numCarriers++;
+            } else if (creep.memory.role == "claimer"){
+                this.numClaimers++;
             }
         }    
     },

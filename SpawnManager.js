@@ -9,9 +9,13 @@
 
 module.exports = {
     SpawnACreep: function(energy, spawn, gameInfoManager){
-        var type = gameInfoManager.ChooseAClass();
+        var type = gameInfoManager.ChooseAClass(energy);
         if(type == "archer"){
             spawn.createCreep([MOVE,RANGED_ATTACK], undefined, {role: type});
+            return;
+        }
+        if(type == "claimer"){
+            spawn.createCreep([MOVE,CLAIM], undefined, {role: type});
             return;
         }
         

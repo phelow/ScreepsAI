@@ -53,14 +53,14 @@ module.exports = {
 	run: function(creep,gameInfoManager){
 	    roleFootman.findNearestTargetCreep(creep,gameInfoManager);
 	    
-	    if(roleFootman.killRoom == 0){
+	    if(roleFootman.killCreepRoom == 0){
 	        roleHarvester.Explore(creep, gameInfoManager);
 	        return;
 	    }
 	    
 	    delete creep.memory.exploreIndex;
 	    
-	    creep.rangedAttack(gameInfoManager.World[roleFootman.killRoom].hostileCreeps[roleFootman.killSite]);
-	    this.kite(creep, gameInfoManager.World[roleFootman.killRoom].hostileCreeps[roleFootman.killSite],gameInfoManager);
+	    creep.rangedAttack(gameInfoManager.World[roleFootman.killCreepRoom].hostileCreeps[roleFootman.killCreepSite]);
+	    this.kite(creep, gameInfoManager.World[roleFootman.killCreepRoom].hostileCreeps[roleFootman.killCreepSite],gameInfoManager);
 	}
 };
