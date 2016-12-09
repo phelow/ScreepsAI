@@ -7,6 +7,7 @@
  * mod.thing == 'a thing'; // true
  */
 var pathManager = require("PathManager")
+//TODO: incorporate pathing for all roles
 
 module.exports = {
     ChangeHarvestState: function(creep){

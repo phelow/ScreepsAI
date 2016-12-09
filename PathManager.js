@@ -13,9 +13,17 @@ module.exports = { // store and reuse often used paths
     cleanCacheByUsage: function() {
         if(Memory.pathCache && _.size(Memory.pathCache) > 15000) { //1500 entries ~= 100kB
           var counter = 0;
+          var use = 9999;
           for (var key in Memory.pathCache) {
             var cached = Memory.pathCache[key];
-            if(cached.uses < 5) {
+            if(cached.uses < use) {
+              use = cached.uses;
+            }
+          }
+          
+          for (var key in Memory.pathCache) {
+            var cached = Memory.pathCache[key];
+            if(cached.uses < use) {
               Memory.pathCache[key] = undefined;
               counter += 1;
             }
@@ -63,11 +71,13 @@ module.exports = { // store and reuse often used paths
     moveToNextStep: function(creep, to){
         var p = this.getPath(creep.pos,to);
         if(p['path'] && creep.room.getPositionAt( p['path'].x, p['path'].y).lookFor(LOOK_CREEPS).length == 0){
-            var code = creep.moveTo( p['path'].x, p['path'].y);
+            var code = creep.moveTo( p['path'].x, p['path'].y); //TODO: replace with directional move
             
             if(code != 0){
+                console.log("pathfinding failure");
                 return creep.moveTo(to);
             }
+            console.log("pathfinding success");
             return code;
         }
         else{
