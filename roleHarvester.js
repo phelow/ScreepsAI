@@ -264,9 +264,15 @@ module.exports = {
             this.ChooseExploreIndex(creep, gameInfoManager);
         }
         
-        var errCode = pathManager.moveToNextStep(creep,gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos);
-        if(errCode == -2 || errCode == -7){
-            this.ChooseExploreIndex(creep, gameInfoManager);
+        if(typeof(gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos) == 'undefined'){
+            
+        }
+        else{
+            
+            var errCode = pathManager.moveToNextStep(creep,gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos);
+            if(errCode == -2 || errCode == -7){
+                this.ChooseExploreIndex(creep, gameInfoManager);
+            }
         }
     },
     

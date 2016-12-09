@@ -10,8 +10,11 @@
 module.exports = { // store and reuse often used paths
 
     addPath: function(from, to, path) {
+        if(from == to || typeof(from) == 'undefined'){
+            return;
+        }
         this.cleanCacheByUsage();
-        var key = this.getPathKey(from, to); //TODO: populate the rest of the tree
+        var key = this.getPathKey(from, to);
         var cache = Memory.pathCache || {};
         var cachedPath = {
           path: path,
@@ -19,12 +22,10 @@ module.exports = { // store and reuse often used paths
         }
         cache[key] = cachedPath;
         Memory.pathCache = cache;
+        this.addPath(path[1],to,path.slice(1,path.length));
     },
 
     getPath: function(from, to) {
-        if(typeof(to) == 'undefined'){
-            return null;
-        }
         
         var cache = Memory.pathCache;
         if(cache) {
@@ -32,8 +33,6 @@ module.exports = { // store and reuse often used paths
           if(cachedPath) {
             cachedPath.uses += 1;
             Memory.pathCache = cache;
-            console.log("cached path:");
-            console.log(cachedPath);
             return cachedPath;
           }
         }
@@ -43,14 +42,29 @@ module.exports = { // store and reuse often used paths
     },
     
     getNextStep: function(from, to){
+        
         var path = this.getPath(from, to);
-        console.log( path['path'][0].x + " " + path['path'][0].y);
+        
         return path['path'][0]; //plzfix
     },
     
     moveToNextStep: function(creep, to){
         var p = this.getNextStep(creep.pos,to);
-        creep.moveTo(p.x,p.y);
+        console.log(p);
+        if(p){
+            var code = creep.moveTo(p.x,p.y);
+            
+            if(code == -2){
+                return creep.moveTo(to);
+            }
+            return code;
+        }
+        else{
+            console.log("pathfinding failure");
+            creep.moveTo(to);
+            return;
+            
+        }
     },
 
     cleanCacheByUsage: function() {
