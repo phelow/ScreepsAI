@@ -38,7 +38,7 @@ module.exports = {
         }
     },
     
-    run: function(creep, gameInfoManager){
+    run: function(creep, gameInfoManager){ //SIPHON from upgrades and other units
         roleHarvester.ChangeHarvestState(creep);
         
         //if there is a repairable structure within range repair it

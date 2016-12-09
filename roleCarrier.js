@@ -35,7 +35,7 @@ module.exports = {
         }
     },
     
-    run: function(creep, gameInfoManager){
+    run: function(creep, gameInfoManager){//TODO: if another unit is closer than a dropoff point go to that instead
         roleHarvester.ChangeHarvestState(creep);
         
         //if harvesting search for the nearest creep with energy, prioritize miners
@@ -57,7 +57,7 @@ module.exports = {
                 this.ChooseTransferTarget(creep,gameInfoManager);
             }
             creep.say("48:" + result);
-            creep.memory.harvesting = false;
+            //creep.memory.harvesting = false;
             
         }
         //else

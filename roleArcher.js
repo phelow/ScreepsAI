@@ -53,7 +53,7 @@ module.exports = {
 	run: function(creep,gameInfoManager){
 	    roleFootman.findNearestTargetCreep(creep,gameInfoManager);
 	    
-	    if(roleFootman.killCreepRoom == 0){
+	    if(roleFootman.killCreepRoom == -1){
 	        roleHarvester.Explore(creep, gameInfoManager);
 	        return;
 	    }

@@ -137,7 +137,7 @@ module.exports = {
     },
     
     UpgraderDemand: function(){
-        return this.numUpgraders * 12;
+        return this.numUpgraders * 18;
     },
     
     HarvesterDemand: function(){
