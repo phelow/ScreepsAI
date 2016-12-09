@@ -44,17 +44,16 @@ module.exports = { // store and reuse often used paths
     getNextStep: function(from, to){
         
         var path = this.getPath(from, to);
-        
         return path['path'][0]; //plzfix
     },
     
     moveToNextStep: function(creep, to){
-        var p = this.getNextStep(creep.pos,to);
-        console.log(p);
-        if(p){
-            var code = creep.moveTo(p.x,p.y);
+        var p = this.getPath(creep.pos,to);
+        console.log(p['path'].length);
+        if(p['path'] && creep.room.getPositionAt( p['path'][0].x, p['path'][0].y).lookFor(LOOK_CREEPS).length == 0){
+            var code = creep.moveTo( p['path'][0].x, p['path'][0].y);
             
-            if(code == -2){
+            if(code != 0){
                 return creep.moveTo(to);
             }
             return code;
