@@ -21,7 +21,7 @@ module.exports = {
         }
         
         if(creep.upgradeController(creep.room.controller) != 0){
-            creep.moveTo(creep.room.controller);
+            pathManager.moveToNextStep(creep,creep.room.controller);
             return;
         }
     }

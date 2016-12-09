@@ -51,7 +51,8 @@ module.exports = {
                 this.ChooseTransferTarget(creep,gameInfoManager);
             }
             Game.creeps[creep.memory.transferTargetName].helped = true;
-            creep.moveTo(Game.creeps[creep.memory.transferTargetName]);
+            
+            pathManager.moveToNextStep(creep,Game.creeps[creep.memory.transferTargetName]);
             result = Game.creeps[creep.memory.transferTargetName].transfer(creep,RESOURCE_ENERGY,_.sum(Game.creeps[creep.memory.transferTargetName].carry));
             if(result == -6){
                 this.ChooseTransferTarget(creep,gameInfoManager);

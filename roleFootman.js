@@ -62,12 +62,12 @@ module.exports = {
         
         if(typeof(gameInfoManager.World[this.killCreepRoom]) != 'undefined'){ //TODO: see if this works when you're next to a unit
 			creep.say("C");
-			creep.moveTo(gameInfoManager.World[this.killCreepRoom].hostileCreeps[this.killCreepSite])
+			pathManager.moveToNextStep(creep,gameInfoManager.World[this.killCreepRoom].hostileCreeps[this.killCreepSite])
 			creep.attack(gameInfoManager.World[this.killCreepRoom].hostileCreeps[this.killCreepSite]);
         }
         else{
             creep.say("S");
-			creep.moveTo(gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
+			pathManager.moveToNextStep(creep,gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
 			creep.attack(gameInfoManager.World[this.killRoom].hostileStructures[this.killSite]);
         }
     }

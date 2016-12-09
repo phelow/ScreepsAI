@@ -69,7 +69,7 @@ module.exports = {
         }
         
         if(t != 0){
-            if(creep.moveTo(gameInfoManager.World[creep.memory.buildRoom].constructionSites[creep.memory.buildSite])!= 0){
+            if(pathManager.moveToNextStep(creep,gameInfoManager.World[creep.memory.buildRoom].constructionSites[creep.memory.buildSite])!= 0){
                 roleHarvester.run(creep,gameInfoManager);
             }
         }

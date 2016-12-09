@@ -10,7 +10,7 @@ module.exports = {
     run: function(creep, gameInfoManager){
         for(var room in Game.rooms){
             if(typeof(room.controller) != 'undefined' && room.controller.my == false){
-                creep.moveTo(room.controller);
+                pathManager.moveToNextStep(creep,room.controller);
                 creep.claimController(room.controller);
                 return;
             }
