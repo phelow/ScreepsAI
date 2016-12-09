@@ -19,7 +19,7 @@ module.exports = {
             for(var constructionSite in gameInfoManager.World[roomName].hostileCreeps){
                 var curRange = creep.pos.getRangeTo(gameInfoManager.World[roomName].hostileCreeps[constructionSite].pos);
                 if(curRange <= closestRange && !(gameInfoManager.World[roomName].hostileCreeps[constructionSite].hitsMax > creep.hitsMax * 5 
-                && gameInfoManager.World[roomName].hostileCreeps[constructionSite].hitsMax == 5000 && gameInfoManager.World[roomName].hostileCreeps[constructionSite].room.controller.safeMode <= 1)){
+                && gameInfoManager.World[roomName].hostileCreeps[constructionSite].hitsMax == 5000 )){
                     closestRange = curRange;
                     this.killCreepRoom = roomName;
                     this.killCreepSite = constructionSite;

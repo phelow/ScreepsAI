@@ -31,16 +31,25 @@ module.exports = { // store and reuse often used paths
         }
     },
     addPath: function(from, to, path) {
+        
+    
+        
         if(from == to || typeof(from) == 'undefined'){
             return;
         }
         this.cleanCacheByUsage();
         var key = this.getPathKey(from, to);
         var cache = Memory.pathCache || {};
+        if(cache[key]){
+            return;
+        }
+        
+        
         var cachedPath = {
           path: path[0],
           uses: 1
         }
+        
         cache[key] = cachedPath;
         Memory.pathCache = cache;
         this.addPath(path[1],to,path.slice(1,path.length));
@@ -70,8 +79,10 @@ module.exports = { // store and reuse often used paths
     
     moveToNextStep: function(creep, to){
         var p = this.getPath(creep.pos,to);
-        if(p['path'] && creep.room.getPositionAt( p['path'].x, p['path'].y).lookFor(LOOK_CREEPS).length == 0){
-            var code = creep.moveTo( p['path'].x, p['path'].y); //TODO: replace with directional move
+        if(p['path']&& creep.room.lookForAt(LOOK_CREEPS,p['path'].x, p['path'].y).length == 0){
+            //var code = creep.moveTo( p['path'].x, p['path'].y); //TODO: replace with directional move
+            var code = creep.move(p['path'].direction);
+            
             
             if(code != 0){
                 console.log("pathfinding failure");
