@@ -105,7 +105,7 @@ module.exports = {
         }
         
         //return to the spawn
-        pathManager.moveToNextStep(creep,pathManager.getNextStep(creep.pos,Game.spawns[creep.memory.closestReturnSpawn]));
+        pathManager.moveToNextStep(creep,Game.spawns[creep.memory.closestReturnSpawn].pos);
         creep.transfer(Game.spawns[creep.memory.closestReturnSpawn],RESOURCE_ENERGY,_.sum(creep.carry));
         
     },  
@@ -184,7 +184,7 @@ module.exports = {
                 closestEnergy = gameInfoManager.World[creep.room.name].droppedEnergy[droppedEnergyHash];
             }
         }
-        pathManager.moveToNextStep(creep,pathManager.getNextStep(creep.pos,closestEnergy));
+        pathManager.moveToNextStep(creep,closestEnergy.pos);
         creep.pickup(closestEnergy);
     },
     
@@ -193,12 +193,12 @@ module.exports = {
         
         if(this.closestReturnRoom == 0){
             creep.say("RE");
-            pathManager.moveToNextStep(creep,pathManager.getNextStep(creep.pos,Game.spawns.Spawn1));
+            pathManager.moveToNextStep(creep,Game.spawns.Spawn1.pos);
             return;
         }
         
         creep.say(gameInfoManager.World[this.closestReturnRoom].returnStructures[this.closestReturnStructure]);
-        pathManager.moveToNextStep(creep,pathManager.getNextStep(creep.pos,gameInfoManager.World[this.closestReturnRoom].returnStructures[this.closestReturnStructure]));
+        pathManager.moveToNextStep(creep,gameInfoManager.World[this.closestReturnRoom].returnStructures[this.closestReturnStructure].pos);
         
         
         for(var resourceType in creep.carry) {
@@ -224,7 +224,7 @@ module.exports = {
         }
         
         
-        if(pathManager.moveToNextStep(creep,gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]) == -2){
+        if(pathManager.moveToNextStep(creep,gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource].pos) == -2){
             this.ChooseHarvestIndex(creep,gameInfoManager);
             if(typeof(gameInfoManager.World[creep.memory.harvestRoom]) == 'undefined'){
                 return;
@@ -264,7 +264,7 @@ module.exports = {
             this.ChooseExploreIndex(creep, gameInfoManager);
         }
         
-        var errCode = pathManager.moveToNextStep(creep,gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex]);
+        var errCode = pathManager.moveToNextStep(creep,gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos);
         if(errCode == -2 || errCode == -7){
             this.ChooseExploreIndex(creep, gameInfoManager);
         }
