@@ -7,6 +7,7 @@
  * mod.thing == 'a thing'; // true
  */
 
+var pathManager = require("PathManager");
 var roleHarvester = require("roleHarvester");
 
 module.exports = {

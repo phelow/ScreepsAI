@@ -6,6 +6,7 @@
  * var mod = require('roleClaimer');
  * mod.thing == 'a thing'; // true
  */
+var pathManager = require("PathManager");
 module.exports = {
     run: function(creep, gameInfoManager){
         for(var room in Game.rooms){

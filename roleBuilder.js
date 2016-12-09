@@ -6,6 +6,7 @@
  * var mod = require('roleBuilder');
  * mod.thing == 'a thing'; // true
  */
+var pathManager = require("PathManager");
 var roleHarvester = require("roleHarvester");
 var roleUpgrader = require("roleUpgrader");
 
