@@ -149,6 +149,7 @@ module.exports = {
         }
         var cost = Infinity;
         //take ten random explore indices, choose the undefined one or one with the highest success rate
+        console.log(gameInfoManager.World[creep.room.name].exits);
         for(var t = 0; t < 10; t++){
             var tryIndex = Math.floor(Math.random() * gameInfoManager.World[creep.room.name].exits.length);
             
@@ -264,13 +265,13 @@ module.exports = {
             this.ChooseExploreIndex(creep, gameInfoManager);
         }
         
-        if(typeof(gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos) == 'undefined'){
+        if(typeof(gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex]) == 'undefined'){
             this.ChooseExploreIndex(creep, gameInfoManager);
             
         }
         else{
             
-            var errCode = pathManager.moveToNextStep(creep,gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos);
+            var errCode = pathManager.moveToNextStep(creep,gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex]);
             if(errCode == -2 || errCode == -7){
                 this.ChooseExploreIndex(creep, gameInfoManager);
             }

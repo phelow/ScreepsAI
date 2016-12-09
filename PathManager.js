@@ -9,6 +9,19 @@
 
 module.exports = { // store and reuse often used paths
 
+
+    cleanCacheByUsage: function() {
+        if(Memory.pathCache && _.size(Memory.pathCache) > 15000) { //1500 entries ~= 100kB
+          var counter = 0;
+          for (var key in Memory.pathCache) {
+            var cached = Memory.pathCache[key];
+            if(cached.uses < 3) {
+              Memory.pathCache[key] = undefined;
+              counter += 1;
+            }
+          }
+        }
+    },
     addPath: function(from, to, path) {
         if(from == to || typeof(from) == 'undefined'){
             return;
@@ -63,19 +76,6 @@ module.exports = { // store and reuse often used paths
             creep.moveTo(to);
             return;
             
-        }
-    },
-
-    cleanCacheByUsage: function() {
-        if(Memory.pathCache && _.size(Memory.pathCache) > 1500) { //1500 entries ~= 100kB
-          var counter = 0;
-          for (var key in Memory.pathCache) {
-            var cached = Memory.pathCache[key];
-            if(cached.uses === usage) {
-              Memory.pathCache[key] = undefined;
-              counter += 1;
-            }
-          }
         }
     },
 

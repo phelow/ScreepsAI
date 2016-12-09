@@ -54,7 +54,8 @@ module.exports = {
                 {filter: (structure) => {
                 return structure.structureType == STRUCTURE_KEEPER_LAIR}});
             this.World[room.name].hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
-            this.World[room.name].exits = room.find(FIND_EXIT);
+            this.World[room.name].exits = room.find(FIND_EXIT, {filter: (position) => {return Game.map.getTerrainAt(position.pos, room.name) != 'wall'}});
+            console.log(this.World[room.name].exits);
             this.World[room.name].myTowers = room.find(STRUCTURE_TOWER, {filter: (structure) => {return (structure.my)}});
             
             if(typeof(room.controller) != 'undefined' && room.controller.my){
