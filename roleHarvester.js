@@ -265,6 +265,7 @@ module.exports = {
         }
         
         if(typeof(gameInfoManager.World[creep.room.name].exits[creep.memory.exploreIndex].pos) == 'undefined'){
+            this.ChooseExploreIndex(creep, gameInfoManager);
             
         }
         else{
@@ -315,7 +316,6 @@ module.exports = {
             || typeof(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]) == "undefined" ){
                 this.ChooseHarvestIndex(creep, gameInfoManager);
             }
-            creep.say(this.exploring);
             if(this.exploring || false == this.Harvest(creep, gameInfoManager))
             {
                 this.Explore(creep, gameInfoManager);
