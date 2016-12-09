@@ -15,7 +15,7 @@ module.exports = { // store and reuse often used paths
           var counter = 0;
           for (var key in Memory.pathCache) {
             var cached = Memory.pathCache[key];
-            if(cached.uses < 3) {
+            if(cached.uses < 5) {
               Memory.pathCache[key] = undefined;
               counter += 1;
             }
@@ -30,7 +30,7 @@ module.exports = { // store and reuse often used paths
         var key = this.getPathKey(from, to);
         var cache = Memory.pathCache || {};
         var cachedPath = {
-          path: path,
+          path: path[0],
           uses: 1
         }
         cache[key] = cachedPath;
@@ -57,14 +57,13 @@ module.exports = { // store and reuse often used paths
     getNextStep: function(from, to){
         
         var path = this.getPath(from, to);
-        return path['path'][0]; //plzfix
+        return path['path']; //plzfix
     },
     
     moveToNextStep: function(creep, to){
         var p = this.getPath(creep.pos,to);
-        console.log(p['path'].length);
-        if(p['path'] && creep.room.getPositionAt( p['path'][0].x, p['path'][0].y).lookFor(LOOK_CREEPS).length == 0){
-            var code = creep.moveTo( p['path'][0].x, p['path'][0].y);
+        if(p['path'] && creep.room.getPositionAt( p['path'].x, p['path'].y).lookFor(LOOK_CREEPS).length == 0){
+            var code = creep.moveTo( p['path'].x, p['path'].y);
             
             if(code != 0){
                 return creep.moveTo(to);

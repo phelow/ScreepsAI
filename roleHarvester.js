@@ -16,7 +16,7 @@ module.exports = {
         if (totalCarry == creep.carryCapacity || (totalCarry >= creep.carryCapacity *.9 && creep.memory.role == "carrier"))
         {
             creep.memory.harvesting = false;
-            creep.memory.harvestRoom = 0;
+            creep.memory.harvestRoom = -1;
         }
         //if we are at 0 carry, start harvesting
         else if(totalCarry == 0){
@@ -39,8 +39,8 @@ module.exports = {
     ChooseHarvestIndex: function(creep, gameInfoManager){
         this.exploring = false;
         //pick the closest harvest index with available slots
-        creep.memory.harvestRoom = 0;
-        creep.memory.harvestSource = 0;
+        creep.memory.harvestRoom = -1;
+        creep.memory.harvestSource = -1;
         var closestRange = 999999;
         
         for(let roomName in gameInfoManager.World){
@@ -75,7 +75,7 @@ module.exports = {
         }
 
         
-        if(creep.memory.harvestRoom == 0){
+        if(creep.memory.harvestRoom == -1){
             this.exploring = true;
             return;
         }
@@ -149,7 +149,6 @@ module.exports = {
         }
         var cost = Infinity;
         //take ten random explore indices, choose the undefined one or one with the highest success rate
-        console.log(gameInfoManager.World[creep.room.name].exits);
         for(var t = 0; t < 10; t++){
             var tryIndex = Math.floor(Math.random() * gameInfoManager.World[creep.room.name].exits.length);
             
@@ -212,7 +211,7 @@ module.exports = {
             this.ChooseHarvestIndex(creep,gameInfoManager);
         }
         
-        if(creep.memory.harvestRoom == 0 
+        if(creep.memory.harvestRoom == -1
         || typeof(gameInfoManager.World[creep.memory.harvestRoom]) == 'undefined' 
         || typeof(gameInfoManager.World[creep.memory.harvestRoom].sources) == 'undefined'
         || typeof(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]) == 'undefined'){
@@ -311,7 +310,7 @@ module.exports = {
             }
             //TODO: cleanup, too many lines
             if(typeof(creep.memory.harvestRoom) == 'undefined' 
-            || creep.memory.harvestRoom == 0 
+            || creep.memory.harvestRoom == -1 
             || typeof(gameInfoManager.World[creep.memory.harvestRoom]) == "undefined" 
             || typeof(gameInfoManager.World[creep.memory.harvestRoom].sources) == "undefined" 
             || typeof(gameInfoManager.World[creep.memory.harvestRoom].sources[creep.memory.harvestSource]) == "undefined" ){
