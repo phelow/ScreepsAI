@@ -121,6 +121,10 @@ module.exports = { // store and reuse often used paths
   },
 
   getPosKey: function(pos) {
+    if(typeof(pos.roomName) == 'undefined' ){
+        return "";
+    }
+      
     return pos.x + 'x' + pos.y + pos.roomName;
   }
 };

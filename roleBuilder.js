@@ -61,7 +61,7 @@ module.exports = {
             roleHarvester.run(creep,gameInfoManager);
             return;
         }
-        creep.say("build: " + t);
+        
         var t = creep.build(gameInfoManager.World[creep.memory.buildRoom].constructionSites[creep.memory.buildSite]) 
         
         if(t == -14){
