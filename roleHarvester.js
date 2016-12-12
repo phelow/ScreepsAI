@@ -165,7 +165,6 @@ module.exports = {
                 creep.memory.exploreIndex = tryIndex;
             }
         }    
-        creep.say("E" + creep.memory.exploreIndex);
         //Take away one point for choosing
         creep.memory.exploreRoom = creep.room.name;
         Memory[creep.room.name].exitSuccessRates[creep.memory.exploreIndex] = Memory[creep.room.name].exitSuccessRates[creep.memory.exploreIndex] - 1;
@@ -193,12 +192,9 @@ module.exports = {
         this.ChooseReturnIndex(creep, gameInfoManager);
         
         if(this.closestReturnRoom == 0){
-            creep.say("RE");
             pathManager.moveToNextStep(creep,Game.spawns.Spawn1.pos);
             return;
         }
-        
-        creep.say(gameInfoManager.World[this.closestReturnRoom].returnStructures[this.closestReturnStructure]);
         pathManager.moveToNextStep(creep,gameInfoManager.World[this.closestReturnRoom].returnStructures[this.closestReturnStructure].pos);
         
         
@@ -247,7 +243,6 @@ module.exports = {
     },
     
     Explore: function(creep, gameInfoManager){
-        creep.say("E");
         //Track success rate
         if(typeof(creep.memory.exploreIndex) == 'undefined' || creep.memory.room != creep.room.name){
             if(typeof(creep.memory.exploreIndex) != 'undefined' && typeof(creep.memory.exploreRoom) != 'undefined'){

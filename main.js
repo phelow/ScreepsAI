@@ -15,6 +15,7 @@ var roleCarrier = require("roleCarrier");
 var roleTower = require("roleTower");
 var roleArcher = require("roleArcher");
 var spawnManager = require("SpawnManager");
+var pathManager = require("PathManager");
 //-----
 
 module.exports.loop = function () {
@@ -23,7 +24,27 @@ module.exports.loop = function () {
     //take our tally of population
     
     gameInfoManager.CacheEnvironment();
+    var hashSet = {};
     
+    for(var creepIndex in Game.creeps){
+        var creep = Game.creeps[creepIndex];
+        creep.memory.manualMove = false;
+        
+        for(var xPlus = -1; xPlus < 2; xPlus++){
+            
+            for(var yPlus = -1; yPlus < 2; yPlus++){
+                var x = creep.pos.x + xPlus;
+                var y =  creep.pos.y + yPlus;
+                var hash = creep.room + " " + x + " " + y;
+                if(hash in hashSet){
+                   hashSet[ hash].memory.manualMove = true; 
+                   creep.memory.manualMove = true;
+                }
+                hashSet[hash] = creep;
+            }
+        }
+        
+    }
     //run the creeps
     for(var creepIndex in Game.creeps){
         var creep = Game.creeps[creepIndex];
@@ -63,7 +84,10 @@ module.exports.loop = function () {
                 delete Memory.creeps[i];
             }
         }
+    
+        pathManager.cleanCacheByUsage();
     }
+    
     Memory.lastBucket = Game.cpu.tickLimit;
     //spawn the creeps
     

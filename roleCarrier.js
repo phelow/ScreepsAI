@@ -58,8 +58,6 @@ module.exports = {
             if(result == -6){
                 this.ChooseTransferTarget(creep,gameInfoManager);
             }
-            creep.say("48:" + result);
-            //creep.memory.harvesting = false;
             
         }
         //else

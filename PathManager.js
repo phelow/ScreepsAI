@@ -37,7 +37,6 @@ module.exports = { // store and reuse often used paths
         if(from == to || typeof(from) == 'undefined'){
             return;
         }
-        this.cleanCacheByUsage();
         var key = this.getPathKey(from, to);
         var cache = Memory.pathCache || {};
         if(cache[key]){
@@ -46,7 +45,7 @@ module.exports = { // store and reuse often used paths
         
         
         var cachedPath = {
-          path: path[0],
+          path: path[0].direction,
           uses: 1
         }
         
@@ -67,7 +66,11 @@ module.exports = { // store and reuse often used paths
           }
         }
         
-      this.addPath(from,to,from.findPathTo(to));
+        
+      var path = from.findPathTo(to);
+      if(path.length > 0){
+        this.addPath(from,to,path);
+      }
       return this.getPath(from,to);
     },
     
@@ -78,21 +81,24 @@ module.exports = { // store and reuse often used paths
     },
     
     moveToNextStep: function(creep, to){
+        if(creep.memory.manualMove == true){
+            creep.say("Path Moving");
+            return creep.moveTo(to);
+        }
+        
         var p = this.getPath(creep.pos,to);
-        if(p['path']&& creep.room.lookForAt(LOOK_CREEPS,p['path'].x, p['path'].y).length == 0){
+        if(p['path']){
+            //TODO: calculate future position and don't movethere if there's a creep there.
             //var code = creep.moveTo( p['path'].x, p['path'].y); //TODO: replace with directional move
-            var code = creep.move(p['path'].direction);
+            var code = creep.move(p['path']);
             
             
             if(code != 0){
-                console.log("pathfinding failure");
                 return creep.moveTo(to);
             }
-            console.log("pathfinding success");
             return code;
         }
         else{
-            console.log("pathfinding failure");
             creep.moveTo(to);
             return;
             
@@ -108,14 +114,9 @@ module.exports = { // store and reuse often used paths
       usageCountCounter['used'+cached.uses] = usageCountCounter['used'+cached.uses] + 1 || 1;
       howManyTimesCacheUsed += cached.uses;
     }
-
-    console.log(JSON.stringify(usageCountCounter));
-    console.log('howManyTimesCacheUsed: ' + howManyTimesCacheUsed);
-    console.log('cache size: ' + _.size(Memory.pathCache));
   },
 
   getPathKey: function(from, to) {
-    //console.log("getPathKey= "+getPosKey(from) + '$' + getPosKey(to));
     return this.getPosKey(from) + '$' + this.getPosKey(to);
   },
 
